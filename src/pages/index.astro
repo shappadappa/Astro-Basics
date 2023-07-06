@@ -3,79 +3,93 @@ import Layout from '../layouts/Layout.astro';
 import Card from '../components/Card.astro';
 ---
 
-<Layout title="Welcome to Astro.">
+<Layout title="Astro Basics">
 	<main>
-		<h1>Welcome to <span class="text-gradient">Astro</span></h1>
-		<p class="instructions">
-			To get started, open the directory <code>src/pages</code> in your project.<br />
-			<strong>Code Challenge:</strong> Tweak the "Welcome to Astro" message above.
+		<h1>Welcome to <span class="text-gradient">Musical Stockpile</span></h1>
+		<p>
+			The place for sharing your favourite songs, with your favourite people.
+
+			<br /><br />Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quia earum possimus iste? Sunt velit aliquam laboriosam provident in officia animi.
+		
+			<button><a href="#">Add Song</a></button>
 		</p>
-		<ul role="list" class="link-card-grid">
-			<Card
-				href="https://docs.astro.build/"
-				title="Documentation"
-				body="Learn how Astro works and explore the official API docs."
-			/>
-			<Card
-				href="https://astro.build/integrations/"
-				title="Integrations"
-				body="Supercharge your project with new frameworks and libraries."
-			/>
-			<Card
-				href="https://astro.build/themes/"
-				title="Themes"
-				body="Explore a galaxy of community-built starter themes."
-			/>
-			<Card
-				href="https://astro.build/chat/"
-				title="Community"
-				body="Come say hi to our amazing Discord community. ❤️"
-			/>
-		</ul>
 	</main>
 </Layout>
 
 <style>
 	main {
-		margin: auto;
-		padding: 1.5rem;
-		max-width: 60ch;
+		margin: 1rem auto;
+		padding: 1rem;
+		max-width: 800px;
+		background: #eaeaea;
+		border-radius: 1rem;
+		box-shadow: 0 0 50px 10px #eaeaea;
+		color: #555;
 	}
 	h1 {
 		font-size: 3rem;
 		font-weight: 800;
 		margin: 0;
+		color: #333;
+		border-bottom: 1px dotted black;
+		text-align: center;
 	}
 	.text-gradient {
-		background-image: var(--accent-gradient);
+		background-image: linear-gradient(90deg, #333, green);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
-		background-size: 400%;
-		background-position: 0%;
 	}
-	.instructions {
-		line-height: 1.6;
+	p{
+		background: white;
 		margin: 1rem 0;
-		border: 1px solid rgba(var(--accent), 25%);
-		background-color: white;
-		padding: 1rem;
-		border-radius: 0.4rem;
+		border-radius: 1rem;
+		padding: 0.5rem 1rem;
+		line-height: 1.75rem;
 	}
-	.instructions code {
-		font-size: 0.875em;
+	button{
+		background: linear-gradient(90deg, #eee, #a9eca9);
+		display: block;
+		position: relative;
+		margin: 1rem auto;
+		padding: 0.5rem;
+		border-radius: 0.5rem;
 		font-weight: bold;
-		background: rgba(var(--accent), 12%);
-		color: rgb(var(--accent));
-		border-radius: 4px;
-		padding: 0.3em 0.45em;
+		border: 1px solid limegreen;
+		cursor: pointer;
+		font-size: 1.25rem;
+		outline: 0px solid limegreen;
 	}
-	.instructions strong {
-		color: rgb(var(--accent));
+	button::after{
+		content: "";
+		width: 100%;
+		height: 2px;
+		background: black;
+		position: absolute;
+		bottom: 5px;
+		left: 0;
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: 0.25s ease-out;
 	}
-	.link-card-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
-		gap: 1rem;
-		padding: 0;
+	button:hover{
+		animation: outline-ripple 0.5s ease-out;
+	}
+	button:hover::after{
+		transform: scaleX(1);
+		transition: 0.5s ease-out;
+	}
+	button a{
+		text-decoration: none;
+		color: inherit;
+	}
+
+	@keyframes outline-ripple{
+		0%{
+			outline-width: 2px;
+		}
+		100%{
+			outline-offset: 1rem;
+			outline-color: rgba(50, 205, 50, 0)
+		}
 	}
 </style>
