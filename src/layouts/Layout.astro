@@ -29,7 +29,96 @@ const { title } = Astro.props;
 		font: inherit;
 		vertical-align: baseline;
 	}
+	*::selection{
+		background: limegreen;
+		color: white;
+	}
 	body{
 		font-family: Inter, Arial, Helvetica, sans-serif;
+	}
+	main {
+		margin: 1rem auto;
+		padding: 2rem;
+		max-width: 800px;
+		background: #eaeaea;
+		border-radius: 1rem;
+		box-shadow: 0 0 50px 10px #eaeaea;
+		color: #555;
+	}
+	h1 {
+		font-size: 3rem;
+		font-weight: 800;
+		margin: 0;
+		color: #333;
+		border-bottom: 1px dotted black;
+		text-align: center;
+	}
+	p, form{
+		background: white;
+		margin: 1rem 0;
+		border-radius: 1rem;
+		padding: 0.5rem 1rem;
+		line-height: 1.75rem;
+	}
+	form{
+		border: 1px dotted limegreen;
+		margin: 2rem 0;
+		font-size: 1.25rem;
+	}
+	form .error{
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		background: rgba(255, 0, 0, 0.35);
+		color: white;
+		font-size: 2rem;
+		z-index: 2;
+		display: flex;
+		justify-content: center;
+		gap: 1rem;
+		padding: 1.5rem 0;
+		border-radius: 0 0 1rem 1rem;
+		animation: drop-down 0.75s ease-out;
+	}
+	form .error span{
+		left: 1rem;
+		font-size: 2.5rem;
+		font-weight: bold;
+	}
+	form label{
+		text-decoration: underline;
+	}
+	form input{
+		display: block;
+		margin-bottom: 1rem;
+		background: #eaeaea;
+		border-radius: 0.5rem;
+		padding: 0.125rem 0.25rem;
+		transition: 0.5s ease-out;
+		border: 1px solid transparent;
+	}
+	form input:focus-within{
+		outline: none;
+		border-color: #cacaca;
+		background: #e5e5e5;
+	}
+	form input[type="submit"]{
+		background: limegreen;
+		color: white;
+		font-weight: bold;
+		cursor: pointer;
+		padding: 0.5rem;
+		border: 1px solid green;
+		transition: 1s ease-out;
+		margin: 2rem;
+	}
+	form input[type="submit"]:hover{
+		background: green;
+	}
+
+	@keyframes drop-down{
+		0%{transform: translateY(-100%)}
+		100%{transform: translateY(0)}
 	}
 </style>

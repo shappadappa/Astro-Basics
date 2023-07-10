@@ -1,0 +1,12 @@
+---
+import Layout from "../layouts/Layout.astro";
+import AddSongForm from "../components/AddSongForm.jsx"
+---
+
+<Layout title="Astro Basics">
+    <main>
+        <h1>Add a Song</h1>
+
+        <AddSongForm client:idle />
+    </main>
+</Layout>

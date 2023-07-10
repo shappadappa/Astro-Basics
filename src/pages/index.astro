@@ -1,6 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Card from '../components/Card.astro';
+import { db } from '../firebase/server';
+
+const songsRef = db.collection("songs")
+const songsSnapshot = await songsRef.get()
+const songs = songsSnapshot.docs.map(doc => ({
+	id: doc.id,
+	...doc.data()
+}))
 ---
 
 <Layout title="Astro Basics">
@@ -11,40 +18,36 @@ import Card from '../components/Card.astro';
 
 			<br /><br />Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quia earum possimus iste? Sunt velit aliquam laboriosam provident in officia animi.
 		
-			<button><a href="#">Add Song</a></button>
+			<a href="/add"><button>Add Song 🎵</button></a>
 		</p>
+
+		{songs && 
+			<div class="songs-container">
+				<h2>🔥 Popular Songs:</h2>
+				<div class="songs">
+					{songs.map(song =>(
+						<div class="song">
+							<h3>{song.title}</h3>
+							<h4>By {song.artists.map((artist, index) => (
+								<>{`${artist}${index === song.artists.length - 1 ? "" : ", "}`}</>
+							))}</h4>
+						</div>
+					))}
+				</div>
+			</div>
+		}
 	</main>
 </Layout>
 
 <style>
-	main {
-		margin: 1rem auto;
-		padding: 1rem;
-		max-width: 800px;
-		background: #eaeaea;
-		border-radius: 1rem;
-		box-shadow: 0 0 50px 10px #eaeaea;
-		color: #555;
-	}
-	h1 {
-		font-size: 3rem;
-		font-weight: 800;
-		margin: 0;
-		color: #333;
-		border-bottom: 1px dotted black;
-		text-align: center;
-	}
 	.text-gradient {
 		background-image: linear-gradient(90deg, #333, green);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 	}
-	p{
-		background: white;
-		margin: 1rem 0;
-		border-radius: 1rem;
-		padding: 0.5rem 1rem;
-		line-height: 1.75rem;
+	a{
+		text-decoration: none;
+		color: inherit;
 	}
 	button{
 		background: linear-gradient(90deg, #eee, #a9eca9);
@@ -63,7 +66,7 @@ import Card from '../components/Card.astro';
 		content: "";
 		width: 100%;
 		height: 2px;
-		background: black;
+		background: limegreen;
 		position: absolute;
 		bottom: 5px;
 		left: 0;
@@ -78,10 +81,37 @@ import Card from '../components/Card.astro';
 		transform: scaleX(1);
 		transition: 0.5s ease-out;
 	}
-	button a{
-		text-decoration: none;
-		color: inherit;
+	.songs-container{
+		padding: 2rem;
+		box-shadow: 0 0 50px 10px #fff9ed inset;
+		border-radius: 1rem;
 	}
+	.songs-container h2{
+		font-size: 2rem;
+		font-weight: bold;
+		letter-spacing: -1px;
+	}
+	.songs-container .songs{
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 1rem;
+		margin: 1rem 0;
+	}
+	.songs-container .songs .song{
+		background: linear-gradient(135deg, #fbe4ba, transparent 50%);
+		border: 2px solid #fbe4ba;
+		border-radius: 0.5rem;
+		padding: 0.75rem 0.5rem;
+	}
+	.songs-container .songs .song h3{
+		font-weight: bold;
+		text-decoration: underline;
+		font-size: 1.25rem;
+	}
+	.songs-container .songs .song h4{
+		margin: 0.5rem 0;
+	}
+	
 
 	@keyframes outline-ripple{
 		0%{
