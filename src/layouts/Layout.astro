@@ -1,4 +1,5 @@
 ---
+import Navbar from "../components/Navbar"
 export interface Props {
 	title: string;
 }
@@ -16,6 +17,7 @@ const { title } = Astro.props;
 		<title>{title}</title>
 	</head>
 	<body>
+		<Navbar client:only="react" />
 		<slot />
 	</body>
 </html>
@@ -36,8 +38,68 @@ const { title } = Astro.props;
 	body{
 		font-family: Inter, Arial, Helvetica, sans-serif;
 	}
+	.text-gradient {
+		background-image: linear-gradient(90deg, #333, green);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+	nav{
+		position: fixed;
+		top: 0;
+		left: 0;
+		height: 100%;
+		z-index: 999;
+	}
+	nav a{
+		text-decoration: none;
+		color: inherit;
+	}
+	nav.seen{
+		background: #eee;
+		box-shadow: 0 0 50px 10px #bbb;
+		transition: 0.5s ease-out;
+	}
+	nav .toggle-visiblity-container{
+		padding: 1rem;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+	nav .toggle-visiblity-container button{
+		background: transparent;
+		cursor: pointer;
+		display: grid;
+		place-items: center;
+		transition: 0.5s ease-out;
+	}
+	nav .toggle-visiblity-container button:focus-within{
+		outline: none;
+	}
+	nav .toggle-visiblity-container svg{
+		scale: 2;
+	}
+	nav .toggle-visiblity-container a{
+		font-size: 1.5rem;
+		letter-spacing: -1.5px;
+	}
+	nav .links{
+		animation: slide-right 0.5s ease-out;
+		font-size: 1.5rem;
+	}
+	nav .links li{
+		margin: 0.5rem 1rem;
+		list-style-type: none;
+	}
+	nav .links a{
+		padding: 0.5rem;
+	}
+	nav .links svg{
+		scale: 1.5;
+		margin-right: 1rem;
+	}
+
 	main {
-		margin: 1rem auto;
+		margin: 4rem auto;
 		padding: 2rem;
 		max-width: 800px;
 		background: #eaeaea;
@@ -117,6 +179,10 @@ const { title } = Astro.props;
 		background: green;
 	}
 
+	@keyframes slide-right{
+		0%{translate: -100%}
+		100%{translate: 0}
+	}
 	@keyframes drop-down{
 		0%{transform: translateY(-100%)}
 		100%{transform: translateY(0)}
