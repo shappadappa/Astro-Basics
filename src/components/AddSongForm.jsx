@@ -16,6 +16,8 @@ const AddSongForm = () => {
 
         const json = await res.json()
 
+        console.log(json)
+
         if(res.ok){
             location.href = "/"
         } else{

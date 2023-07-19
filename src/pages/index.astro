@@ -1,6 +1,21 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { db } from '../firebase/server';
+import { db, app } from '../firebase/server';
+import { getAuth } from "firebase-admin/auth"
+
+const auth = getAuth(app)
+const sessionCookie = Astro.cookies.get("session").value
+
+if(!sessionCookie){
+	return Astro.redirect("/login")
+}
+
+const decodedCookie = await auth.verifySessionCookie(sessionCookie)
+const user = await auth.getUser(decodedCookie.uid)
+
+if(!user){
+	return Astro.redirect("/login")
+}
 
 const songsRef = db.collection("songs")
 const songsSnapshot = await songsRef.get()
@@ -12,7 +27,7 @@ const songs = songsSnapshot.docs.map(doc => ({
 
 <Layout title="Astro Basics">
 	<main>
-		<h1>Welcome to <span class="text-gradient">Musical Stockpile</span></h1>
+		<h1>Welcome to <span class="text-gradient">Musical Stockpile</span>, {user.displayName}</h1>
 		<p>
 			The place for sharing your favourite songs, with your favourite people.
 

@@ -1,0 +1,46 @@
+---
+import Layout from "../layouts/Layout.astro"
+import LoginForm from "../components/LoginForm"
+import { app } from '../firebase/server';
+import { getAuth } from "firebase-admin/auth"
+
+const auth = getAuth(app)
+const sessionCookie = Astro.cookies.get("session").value
+
+if(sessionCookie){
+	const decodedCookie = await auth.verifySessionCookie(sessionCookie)
+    const user = await auth.getUser(decodedCookie.uid)
+
+    if(user){
+        return Astro.redirect("/")
+    }
+}
+---
+
+<Layout title="Astro Basics">
+    <main>
+        <h1>Sign Up</h1>
+
+        <p>Already have an account? Log in <a href="/login">here.</a></p>
+
+        <LoginForm client:only="react" signup={true} />
+    </main>
+</Layout>
+
+<style>
+    p{
+        text-align: center;
+    }
+    a{
+        color: inherit;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    a:hover{
+        text-decoration: underline;
+    }
+
+    form{
+
+    }
+</style>
