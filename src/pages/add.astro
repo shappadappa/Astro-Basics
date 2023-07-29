@@ -23,6 +23,6 @@ if(!user){
     <main>
         <h1>Add a Song</h1>
 
-        <AddSongForm client:idle />
+        <AddSongForm client:only="react" sessionCookie={sessionCookie} />
     </main>
 </Layout>

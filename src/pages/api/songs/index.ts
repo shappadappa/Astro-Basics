@@ -1,29 +1,28 @@
 import type { APIRoute } from "astro"
 import { db } from "../../../firebase/server"
+import { getAuth } from "firebase-admin/auth"
 
 export const post: APIRoute = async({request, redirect}) =>{
-  const formData = await request.formData()
+  const auth = getAuth()
+  const sessionCookie = request.headers.get("Authorization").split(" ") [1]
+
+  if(!sessionCookie){
+    return new Response(JSON.stringify({error: "Session cookie required"}), {status: 400})
+  }
+
+  const decodedCookie = await auth.verifySessionCookie(sessionCookie)
   
-  const title = formData.get("title")?.toString()
-  const artists = formData.get("artists")?.toString()
-
-  if(!title){
-    return new Response(JSON.stringify({error: "Title required"}), {status: 400})
-  }
-
-  if(!artists){
-    return new Response(JSON.stringify({error: "Artist required"}), {status: 400})
-  }
-
-  const song = {title: title.trim(), artists: artists.split(",").map(artist => artist.trim())}
-
   try {
+    const body = await request.json()
+
+    const song = {spotifyId: body.spotifyId, userUid: decodedCookie.uid, createdAt: new Date()}
+
     await db.collection("songs").add(song)
+
+    return new Response(JSON.stringify(song), {status: 200})
   } catch (error){
     return new Response(JSON.stringify({error: "Something went wrong"}), {
       status: 500,
     })
   }
-
-  return new Response(JSON.stringify(song), {status: 200})
 }

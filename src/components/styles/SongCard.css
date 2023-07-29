@@ -1,0 +1,26 @@
+.song{
+    background: linear-gradient(135deg, #fbe4ba, transparent 50%);
+    border: 2px solid #fbe4ba;
+    border-radius: 0.5rem;
+    padding: 0.75rem 0.5rem;
+    font-size: 1.25rem;
+}
+.song h3{
+    font-weight: bold;
+    text-decoration: underline;
+    font-size: 1.5rem;
+    background: rgba(0, 0, 0, 0.06);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+}
+.song h4{
+    margin: 0.5rem 0;
+}
+.song a{
+    color: inherit;
+    text-decoration: inherit;
+    font-weight: bold;
+}
+.song a:hover{
+    text-decoration: underline;
+}
