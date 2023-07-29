@@ -4,6 +4,8 @@ import styles from "./styles/AddSongForm.css"
 const AddSongForm = ({sessionCookie}) => {
     const [error, setError] = useState("")
     const [searchedTracks, setSearchedTracks] = useState([])
+    const [previousLink, setPreviousLink] = useState("")
+    const [nextLink, setNextLink] = useState("")
 
     const handleSearch = async(e) =>{
         setError("")
@@ -20,8 +22,32 @@ const AddSongForm = ({sessionCookie}) => {
         const json = await res.json()
 
         if(res.ok){
-            console.log(json.tracks)
             setSearchedTracks(json.tracks)
+            setNextLink(json.next)
+            setPreviousLink(json.previous)
+        } else{
+            setError(json.error)
+        }
+    }
+
+    const handleLoad = async(next) =>{
+        setError("")
+        setSearchedTracks([])
+
+        const res = await fetch("api/spotify", {
+            method: "POST",
+            body: JSON.stringify(next ? {nextLink} : {previousLink}),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        })
+
+        const json = await res.json()
+
+        if(res.ok){
+            setSearchedTracks(json.tracks)
+            setNextLink(json.next)
+            setPreviousLink(json.previous)
         } else{
             setError(json.error)
         }
@@ -31,7 +57,7 @@ const AddSongForm = ({sessionCookie}) => {
         setError("")
         e.preventDefault()
 
-        const res = await fetch(`api/songs`, {
+        const res = await fetch("api/songs", {
             method: "POST",
             body: JSON.stringify({spotifyId}),
             headers: {
@@ -100,6 +126,11 @@ const AddSongForm = ({sessionCookie}) => {
                                 <button className="add-song" title="Add Song" onClick={e => handleSubmit(e, searchedTrack.id)}>+</button>
                             </div>
                         ))}
+
+                        <div className="load-buttons-container">
+                            {previousLink && <button className="load" onClick={() => handleLoad(false)}>Load Previous</button>}
+                            {nextLink && <button className="load" onClick={() => handleLoad(true)}>Load More</button>}
+                        </div>
                     </div>
                 </>
             }

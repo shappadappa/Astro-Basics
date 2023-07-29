@@ -47,6 +47,20 @@
     background: #2cd266;
     margin-top: 1rem;
 }
+.load-buttons-container{
+    display: flex;
+    justify-content: space-around;
+    max-width: 50%;
+    margin: 0 auto;
+}
+.load-buttons-container .load{
+    border-radius: 0.5rem;
+    font-size: 1.5rem;
+    padding: 0.5rem;
+    background: #199344;
+    border: 1px solid #198840;
+    color: white;
+}
 
 @keyframes fade-in{
     0%{opacity: 0}
