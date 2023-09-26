@@ -9,11 +9,14 @@ const sessionCookie = Astro.cookies.get("session").value
 
 if(sessionCookie){
     const decodedCookie = await auth.verifySessionCookie(sessionCookie)
-    const user = await auth.getUser(decodedCookie.uid)
+    
+    try{
+        const user = await auth.getUser(decodedCookie.uid)
 
-    if(user){
-        return Astro.redirect("/")
-    }
+        if(user){
+            return Astro.redirect("/")
+        }
+    } catch(error){}
 }
 ---
 

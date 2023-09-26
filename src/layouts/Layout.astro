@@ -15,11 +15,14 @@ let signedIn = false
 
 if(sessionCookie){
     const decodedCookie = await auth.verifySessionCookie(sessionCookie)
-    const user = await auth.getUser(decodedCookie.uid)
 
-    if(user){
-        signedIn = true
-    }
+	try{
+		const user = await auth.getUser(decodedCookie.uid)
+
+		if(user){
+			signedIn = true
+		}
+	} catch(error){}
 }
 ---
 
@@ -53,11 +56,35 @@ if(sessionCookie){
 	}
 	body{
 		font-family: Inter, Arial, Helvetica, sans-serif;
+		background-image: url("/svg/music-note.svg");
+		background-size: 10% 50px;
+		background-position: 0;
+		background-repeat: repeat;
 	}
 	.text-gradient {
 		background-image: linear-gradient(90deg, #333, green);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
+	}
+	.error{
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		background: rgba(255, 0, 0, 0.35);
+		color: white;
+		font-size: 2rem;
+		display: flex;
+		justify-content: center;
+		gap: 1rem;
+		padding: 1.5rem 0;
+		border-radius: 0 0 1rem 1rem;
+		animation: drop-down 0.75s ease-out;
+	}
+	.error span{
+		left: 1rem;
+		font-size: 2.5rem;
+		font-weight: bold;
 	}
 	button{
 		cursor: pointer;
@@ -79,10 +106,15 @@ if(sessionCookie){
 		transition: 0.5s ease-out;
 	}
 	nav .toggle-visiblity-container{
-		padding: 1rem;
+		padding: 0.75rem;
 		display: flex;
 		align-items: center;
 		gap: 1rem;
+		background: rgba(255, 255, 255, 0.75);
+		border-bottom-right-radius: 1rem;
+	}
+	nav.seen .toggle-visiblity-container{
+		background: none;
 	}
 	nav .toggle-visiblity-container button{
 		background: transparent;
@@ -150,27 +182,6 @@ if(sessionCookie){
 		border: 1px dotted limegreen;
 		margin: 2rem 0;
 		font-size: 1.25rem;
-	}
-	form .error{
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		background: rgba(255, 0, 0, 0.35);
-		color: white;
-		font-size: 2rem;
-		z-index: 2;
-		display: flex;
-		justify-content: center;
-		gap: 1rem;
-		padding: 1.5rem 0;
-		border-radius: 0 0 1rem 1rem;
-		animation: drop-down 0.75s ease-out;
-	}
-	form .error span{
-		left: 1rem;
-		font-size: 2.5rem;
-		font-weight: bold;
 	}
 	form label{
 		text-decoration: underline;

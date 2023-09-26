@@ -6,6 +6,29 @@ const LoginForm = ({signup}) => {
     const [error, setError] = useState("")
     const [passwordVisible, setPasswordVisible] = useState(false)
 
+    const auth = getAuth(app)
+    auth.setPersistence(inMemoryPersistence)
+
+    const createSessionCookie = async(email, password) =>{
+        const userCredential = await signInWithEmailAndPassword(auth, email, password)
+
+        const idToken = await userCredential.user.getIdToken()
+
+        const res = await fetch("/api/auth/login", {
+            headers: {
+                Authorization: `Bearer ${idToken}`
+            }
+        })
+
+        const json = await res.json()
+
+        if(res.ok){
+            window.location = "/"
+        } else{
+            setError(json.error)
+        }
+    }
+
     const handleSubmit = async(e) =>{
         setError("")
         e.preventDefault()
@@ -17,18 +40,18 @@ const LoginForm = ({signup}) => {
                 method: "POST",
                 body: formData
             })
-
-            const json = await res.json()
-
+            
             if(res.ok){
-                console.log(json)
+                const email = formData.get("email")?.toString()
+                const password = formData.get("password")?.toString()
+
+                await createSessionCookie(email, password)
             } else{
+                const json = await res.json()
+                
                 setError(json.error)
             }
         } else{
-            const auth = getAuth(app)
-            auth.setPersistence(inMemoryPersistence)
-
             const email = formData.get("email")?.toString()
             const password = formData.get("password")?.toString()
 
@@ -41,23 +64,7 @@ const LoginForm = ({signup}) => {
             }
 
             try{
-                const userCredential = await signInWithEmailAndPassword(auth, email, password)
-
-                const idToken = await userCredential.user.getIdToken()
-
-                const res = await fetch("/api/auth/login", {
-                    headers: {
-                        Authorization: `Bearer ${idToken}`
-                    }
-                })
-
-                const json = await res.json()
-
-                if(res.ok){
-                    window.location = "/"
-                } else{
-                    setError(json.error)
-                }
+                await createSessionCookie(email, password)
             } catch(error){
                 switch(error.code){
                     case "auth/user-not-found":

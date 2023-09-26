@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { getAuth } from "firebase-admin/auth";
-import { app } from "../../../firebase/server";
+import { app, db } from "../../../firebase/server"
 
 export const post: APIRoute = async ({request, redirect}) => {
   const auth = getAuth(app)
@@ -29,6 +29,8 @@ export const post: APIRoute = async ({request, redirect}) => {
       email,
       password,
       displayName: username,
+    }).then(async(user) =>{
+      await db.collection("users").doc(user.uid).set({likes: []})
     })
   } catch (error: any) {
     return new Response(JSON.stringify({error: error.errorInfo.message}), {status: 400})

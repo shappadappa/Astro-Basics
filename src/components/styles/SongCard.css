@@ -4,6 +4,13 @@
     border-radius: 0.5rem;
     padding: 0.75rem 0.5rem;
     font-size: 1.25rem;
+    position: relative;
+    transition: 0.125s ease-out;
+}
+.song.liked{
+    transition: 0.25s ease-out;
+    border: 4px solid #ffcc6e;
+    background: linear-gradient(135deg, #ffcc6e, transparent 50%)
 }
 .song h3{
     font-weight: bold;
@@ -12,6 +19,11 @@
     background: rgba(0, 0, 0, 0.06);
     padding: 0.25rem 0.5rem;
     border-radius: 0.5rem;
+    transition: 0.25s ease-out;
+}
+.song.liked h3{
+    background: rgba(0, 0, 0, 0.6);
+    color: #ffcc6e;
 }
 .song h4{
     margin: 0.5rem 0;
@@ -23,4 +35,24 @@
 }
 .song a:hover{
     text-decoration: underline;
+}
+.song .like{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 0.5rem;
+    background: transparent;
+}
+.song.liked .like{
+    transition: 0.5s ease-out;
+    animation: fill-heart 0.75s ease-out;
+    color: orange;
+    background: radial-gradient(#ffcc6e, transparent 75%);
+}
+
+@keyframes fill-heart {
+    0% {opacity: 0.25}
+    25% {rotate: -15deg}
+    50% {rotate: 15deg}
+    100% {opacity: 1; rotate: 0deg}
 }

@@ -12,11 +12,19 @@ if(!sessionCookie){
 }
 
 const decodedCookie = await auth.verifySessionCookie(sessionCookie)
-const user = await auth.getUser(decodedCookie.uid)
+let user = {}
+try{
+	user = await auth.getUser(decodedCookie.uid)
+} catch(error){
+	return Astro.redirect("/login")
+}
 
 if(!user){
 	return Astro.redirect("/login")
 }
+
+const userRef = db.collection("users").doc(user.uid)
+const userDoc = (await userRef.get()).data()
 
 const songsRef = db.collection("songs")
 const songsSnapshot = await songsRef.get()
@@ -34,7 +42,7 @@ const songs = songsSnapshot.docs.map(doc => ({
 
 			<br /><br />Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quia earum possimus iste? Sunt velit aliquam laboriosam provident in officia animi.
 		
-			<a href="/add"><button>Add Song 🎵</button></a>
+			<a href="/add"><button>Add a Song 🎵</button></a>
 		</p>
 
 		{songs && 
@@ -42,7 +50,7 @@ const songs = songsSnapshot.docs.map(doc => ({
 				<h2>🔥 Popular Songs:</h2>
 				<div class="songs">
 					{songs.map(song =>(
-						<SongCard client:only="react" spotifyId={song.spotifyId} />
+						<SongCard client:only="react" spotifyId={song.spotifyId} sessionCookie={sessionCookie} alreadyLiked={userDoc.likes.includes(song.spotifyId)} />
 					))}
 				</div>
 			</div>

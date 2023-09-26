@@ -5,16 +5,16 @@ const Navbar = ({signedIn}) => {
 
     const handleLogout = async() =>{
         const res = await fetch("/api/auth/logout")
-
+    
         const json = await res.json()
-
+    
         if(res.ok){
             window.location = "/login"
         } else{
             console.error(json.error)
         }
     }
-
+    
     return (
         <nav className={seen ? "seen" : ""}>
             <div className="toggle-visiblity-container">
