@@ -3,6 +3,7 @@ import { getAuth } from "firebase/auth";
 import styles from "./styles/SongCard.css"
 
 const SongCard = ({spotifyId, sessionCookie, alreadyLiked}) => {
+    const [isLoading, setIsLoading] = useState(true)
     const [songDetails, setSongDetails] = useState()
     const [liked, setLiked] = useState(alreadyLiked)
     const [error, setError] = useState("")
@@ -22,6 +23,8 @@ const SongCard = ({spotifyId, sessionCookie, alreadyLiked}) => {
         } else{
             setError(json.error)
         }
+
+        setIsLoading(false)
       }
       
       fetchSongDetails()
@@ -51,7 +54,13 @@ const SongCard = ({spotifyId, sessionCookie, alreadyLiked}) => {
         <div className={`song ${liked ? "liked" : ""}`}>
             {error && <div className="error"><span>!</span>{error}</div>}
 
-            {songDetails && 
+            {isLoading ? 
+                <>
+                    <h3 className="skeleton">‎</h3>
+                    <h4 className="skeleton">‎</h4>
+                    <h4 className="skeleton">‎</h4>
+                </>
+            :
                 <>
                     <h3><a target="_blank" href={songDetails.href}>{songDetails.name}</a></h3>
                     <h4>By {songDetails.artists.map((artist, index) => (

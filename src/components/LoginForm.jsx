@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { getAuth, inMemoryPersistence, signInWithEmailAndPassword } from "firebase/auth"
 import { app } from "../firebase/client"
+import Loader from "./Loader";
 
 const LoginForm = ({signup}) => {
+    const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState("")
     const [passwordVisible, setPasswordVisible] = useState(false)
 
@@ -30,6 +32,7 @@ const LoginForm = ({signup}) => {
     }
 
     const handleSubmit = async(e) =>{
+        setIsLoading(true)
         setError("")
         e.preventDefault()
 
@@ -81,6 +84,8 @@ const LoginForm = ({signup}) => {
                 }
             }
         }
+
+        setIsLoading(false)
     }
 
     return (
@@ -118,6 +123,10 @@ const LoginForm = ({signup}) => {
             <input type={passwordVisible ? "text" : "password"} id="password" name="password"/>
 
             <input type="submit" value={signup ? "Sign Up" : "Login"} />
+
+            {isLoading && 
+                <Loader />
+            }
         </form>
     );
 }

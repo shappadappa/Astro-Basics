@@ -1,0 +1,20 @@
+.loader{
+    display: flex;
+    justify-content: space-around;
+    max-width: 30%;
+    margin: 0 auto;
+    padding: 3.5rem 0;
+}
+.loader .ball{
+    width: clamp(0.5rem, 2vw, 1.5rem);
+    height: clamp(0.5rem, 2vw, 1.5rem);
+    background: #999;
+    border-radius: 100%;
+    animation: bounce 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite;
+}
+
+@keyframes bounce{
+    0%{transform: translateY(0)}
+    50%{transform: translateY(200%)}
+    100%{transform: translateY(0)}
+}

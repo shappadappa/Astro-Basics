@@ -1,13 +1,18 @@
 import { useState } from "react"
+import SearchCard from "./SearchCard"
+import Loader from "./Loader"
 import styles from "./styles/AddSongForm.css"
 
 const AddSongForm = ({sessionCookie}) => {
     const [error, setError] = useState("")
     const [searchedTracks, setSearchedTracks] = useState([])
+    const [isLoading, setIsLoading] = useState(false)
+    const [notFound, setNotFound] = useState(false)
     const [previousLink, setPreviousLink] = useState("")
     const [nextLink, setNextLink] = useState("")
 
     const handleSearch = async(e) =>{
+        setIsLoading(true)
         setError("")
         setSearchedTracks([])
         e.preventDefault()
@@ -22,12 +27,20 @@ const AddSongForm = ({sessionCookie}) => {
         const json = await res.json()
 
         if(res.ok){
+            if(json.tracks.length === 0){
+                setNotFound(true)
+            } else{
+                setNotFound(false)
+            }
+
             setSearchedTracks(json.tracks)
             setNextLink(json.next)
             setPreviousLink(json.previous)
         } else{
             setError(json.error)
         }
+
+        setIsLoading(false)
     }
 
     const handleLoad = async(next) =>{
@@ -94,38 +107,17 @@ const AddSongForm = ({sessionCookie}) => {
                 <input type="submit" value="Search" />
             </form>
 
-            {searchedTracks.length > 0 && 
+            {isLoading &&
+                <Loader />
+            }
+
+            {searchedTracks.length > 0 &&
                 <>
                     <div>
                         {searchedTracks.map(searchedTrack =>(
-                            <div className="searched-song" key={searchedTrack.id}>
-                                <h3>
-                                    🎶 <a target="_blank" href={`https://open.spotify.com/track/${searchedTrack.id}`}>
-                                        {searchedTrack.name}
-                                    </a>
-                                </h3>
-                                <h4>By {searchedTrack.artists.map((artist, index) =>(
-                                    <span key={artist.id}>
-                                        <a target="_blank" key={artist.id} href={`https://open.spotify.com/artist/${artist.id}`}>
-                                            {`${artist.name}`}
-                                        </a>
-                                        <>
-                                            {index === searchedTrack.artists.length - 2 && <> and </>}
-                                            {index !== searchedTrack.artists.length - 1 &&
-                                            index !== searchedTrack.artists.length - 2 &&
-                                            <>,</>}
-                                        </>
-                                    </span>
-                                ))}</h4>
-                                <h4>
-                                    From the album <a target="_blank" href={`https://open.spotify.com/album/${searchedTrack.album.id}`}>
-                                        {searchedTrack.album.name}
-                                    </a>
-                                </h4>
-
-                                <button className="add-song" title="Add Song" onClick={e => handleSubmit(e, searchedTrack.id)}>+</button>
-                            </div>
-                        ))}
+                                <SearchCard key={searchedTrack.id} track={searchedTrack}/>
+                            ))
+                        }
 
                         <div className="load-buttons-container">
                             {previousLink && <button className="load" onClick={() => handleLoad(false)}>Load Previous</button>}
@@ -133,6 +125,13 @@ const AddSongForm = ({sessionCookie}) => {
                         </div>
                     </div>
                 </>
+            }
+
+            {!isLoading && notFound &&
+                <div className="not-found">
+                    <h3>That track was not found on Spotify</h3>
+                    <p>Are you sure it exists ..?</p>
+                </div>
             }
         </>
     );
