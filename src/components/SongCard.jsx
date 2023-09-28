@@ -1,33 +1,39 @@
 import { useState, useEffect } from "react";
-import { getAuth } from "firebase/auth";
 import styles from "./styles/SongCard.css"
 
-const SongCard = ({spotifyId, sessionCookie, alreadyLiked}) => {
+const SongCard = ({loggedInUserId, userId, spotifyId, sessionCookie, alreadyLiked, forceRefresh}) => {
     const [isLoading, setIsLoading] = useState(true)
     const [songDetails, setSongDetails] = useState()
+    const [username, setUsername] = useState("")
     const [liked, setLiked] = useState(alreadyLiked)
     const [error, setError] = useState("")
 
     useEffect(() => {
-      const fetchSongDetails = async() =>{
-        const res = await fetch("/api/spotify", {
-            headers: {
-                "Spotify-Id": spotifyId
+        const fetchDetails = async() =>{
+            // fetch song details
+            const songRes = await fetch(`/api/spotify/${spotifyId}`)
+            
+            const songJson = await songRes.json()
+            
+            if(songRes.ok){
+                setSongDetails(songJson.track)
+            } else{
+                setError(songJson.error)
             }
-        })
 
-        const json = await res.json()
+            // fetch user details
+            const userRes = await fetch(`/api/users/${userId}`)
 
-        if(res.ok){
-            setSongDetails(json.track)
-        } else{
-            setError(json.error)
+            const userJson = await userRes.json()
+
+            if(userRes.ok){
+                setUsername(userJson)
+            }
+
+            setIsLoading(false)
         }
-
-        setIsLoading(false)
-      }
       
-      fetchSongDetails()
+      fetchDetails()
     }, [])
 
     const likeSong = async() =>{
@@ -48,6 +54,10 @@ const SongCard = ({spotifyId, sessionCookie, alreadyLiked}) => {
             setLiked(!liked)
             setError(json.error)
         }
+
+        if(forceRefresh){
+            window.location.reload(false)
+        }
     }
     
     return (
@@ -59,6 +69,7 @@ const SongCard = ({spotifyId, sessionCookie, alreadyLiked}) => {
                     <h3 className="skeleton">‎</h3>
                     <h4 className="skeleton">‎</h4>
                     <h4 className="skeleton">‎</h4>
+                    <h5 className="skeleton">‎</h5>
                 </>
             :
                 <>
@@ -68,7 +79,17 @@ const SongCard = ({spotifyId, sessionCookie, alreadyLiked}) => {
                     ))}</h4>
                     <h4>From <a target="_blank" href={songDetails.album.href}>{songDetails.album.name}</a></h4>
 
-                    <button className="like" onClick={likeSong}>
+                    {loggedInUserId &&
+                        <h5>Added by 
+                            {username.length > 0 ?
+                                <> <a href={`/profile/${userId}`} className={loggedInUserId === userId ? "you" : ""}>{loggedInUserId === userId ? "you" : username}</a></>
+                            :
+                                <span> (deleted)</span>
+                            }
+                        </h5>
+                    }
+
+                    <button className="like" onClick={likeSong} title="Like">
                         {liked ? 
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path fillRule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>

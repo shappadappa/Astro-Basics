@@ -50,7 +50,7 @@ const songs = songsSnapshot.docs.map(doc => ({
 				<h2>🔥 Popular Songs:</h2>
 				<div class="songs">
 					{songs.map(song =>(
-						<SongCard client:only="react" spotifyId={song.spotifyId} sessionCookie={sessionCookie} alreadyLiked={userDoc.likes.includes(song.spotifyId)} />
+						<SongCard client:only="react" loggedInUserId={user.uid} userId={song.userUid} spotifyId={song.spotifyId} sessionCookie={sessionCookie} alreadyLiked={userDoc.likes.includes(song.spotifyId)} forceRefresh={false} />
 					))}
 				</div>
 			</div>
@@ -94,22 +94,6 @@ const songs = songsSnapshot.docs.map(doc => ({
 	button:hover::after{
 		transform: scaleX(1);
 		transition: 0.5s ease-out;
-	}
-	.songs-container{
-		padding: 2rem;
-		box-shadow: 0 0 50px 10px #fff9ed inset;
-		border-radius: 1rem;
-	}
-	.songs-container h2{
-		font-size: 2rem;
-		font-weight: bold;
-		letter-spacing: -1px;
-	}
-	.songs-container .songs{
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 1rem;
-		margin: 1rem 0;
 	}
 
 	@keyframes outline-ripple{

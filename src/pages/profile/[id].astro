@@ -1,0 +1,81 @@
+---
+import Layout from "../../layouts/Layout.astro"
+import { app, db } from "../../firebase/server"
+import { getAuth } from "firebase-admin/auth"
+import SongCard from "../../components/SongCard"
+
+const auth = getAuth(app)
+const sessionCookie = Astro.cookies.get("session").value
+
+if(!sessionCookie){
+	return Astro.redirect("/login")
+}
+
+const decodedCookie = await auth.verifySessionCookie(sessionCookie)
+let user = {}
+try{
+	user = await auth.getUser(decodedCookie.uid)
+} catch(error){
+	return Astro.redirect("/login")
+}
+
+if(!user){
+	return Astro.redirect("/login")
+}
+
+const {id} = Astro.params
+
+const {username, likes: userLikes} = (await db.collection("users").doc(id).get()).data()
+
+const userLikedSongs = (await db.collection("songs").get()).docs.map(song => song.data()).filter(song => userLikes.includes(song.spotifyId))
+const addedSongs = (await db.collection("songs").get()).docs.map(song => song.data()).filter(song => song.userUid === id)
+
+let loggedInUserLikedSongs = (await db.collection("users").doc(user.uid).get()).data().likes
+---
+
+<Layout title="Astro Basics">
+    <main>
+        <h1>{user.displayName === username ? "Your" : `${username}'s`} Profile</h1>
+
+        {userLikedSongs && 
+            <div class="songs-container liked">
+                <h2>❤ Liked Songs:</h2>
+
+                <div class="songs">
+                    {userLikedSongs.map(song => (
+                        <SongCard client:only="react" loggedInUserId={user.uid} userId={song.userUid} spotifyId={song.spotifyId} sessionCookie={sessionCookie} alreadyLiked={loggedInUserLikedSongs.includes(song.spotifyId)} forceRefresh={true}/>
+                    ))}
+                </div>
+            </div>
+        }
+
+        {addedSongs && 
+            <div class="songs-container added">
+                <h2>🎧 Added Songs:</h2>
+
+                <div class="songs">
+                    {addedSongs.map(song => (
+                        <SongCard client:only="react" loggedInUserId={null} userId={null} spotifyId={song.spotifyId} sessionCookie={sessionCookie} alreadyLiked={loggedInUserLikedSongs.includes(song.spotifyId)} forceRefresh={true}/>
+                    ))}
+                </div>
+            </div>
+        }
+    </main>
+</Layout>
+
+<style>
+    .songs-container{
+        margin: 2rem 0;
+        border: 1px solid #cacaca;
+    }
+    h2{
+        border-radius: 1rem;
+        padding: 0.25rem 0.5rem;
+    }
+    .liked h2{
+        background: rgba(255, 204, 110, 0.25);
+    }
+    .added h2{
+        background: rgba(41, 214, 101, 0.25);
+    }
+</style>

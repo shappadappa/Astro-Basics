@@ -11,10 +11,10 @@ const { title } = Astro.props;
 
 const auth = getAuth(app)
 const sessionCookie = Astro.cookies.get("session").value
-let signedIn = false
+let signedIn = false, decodedCookie
 
 if(sessionCookie){
-    const decodedCookie = await auth.verifySessionCookie(sessionCookie)
+    decodedCookie = await auth.verifySessionCookie(sessionCookie)
 
 	try{
 		const user = await auth.getUser(decodedCookie.uid)
@@ -36,7 +36,7 @@ if(sessionCookie){
 		<title>{title}</title>
 	</head>
 	<body>
-		<Navbar client:only="react" signedIn={signedIn}/>
+		<Navbar client:only="react" userId={decodedCookie && decodedCookie.uid ? decodedCookie.uid : null}/>
 		<slot />
 	</body>
 </html>
@@ -67,7 +67,7 @@ if(sessionCookie){
 		-webkit-text-fill-color: transparent;
 	}
 	.error{
-		position: absolute;
+		position: fixed;
 		top: 0;
 		left: 0;
 		width: 100%;
@@ -99,6 +99,10 @@ if(sessionCookie){
 	nav a{
 		text-decoration: none;
 		color: inherit;
+		font-weight: normal;
+	}
+	nav a:hover{
+		text-decoration: none;
 	}
 	nav.seen{
 		background: #eee;
@@ -170,6 +174,22 @@ if(sessionCookie){
 		color: #333;
 		border-bottom: 1px dotted black;
 		text-align: center;
+	}
+	.songs-container{
+		padding: 2rem;
+		box-shadow: 0 0 50px 10px #fff9ed inset;
+		border-radius: 1rem;
+	}
+	.songs-container h2{
+		font-size: 2rem;
+		font-weight: bold;
+		letter-spacing: -1px;
+	}
+	.songs-container .songs{
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 1rem;
+		margin: 1rem 0;
 	}
 	p, form{
 		background: white;
