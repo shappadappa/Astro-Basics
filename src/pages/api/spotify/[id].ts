@@ -1,6 +1,6 @@
 import { APIRoute } from "astro"
 
-export const get: APIRoute = async({params}) =>{
+export const GET: APIRoute = async({params}) =>{
     const accessTokenRes = await fetch("https://accounts.spotify.com/api/token", {
         method: "POST",
         headers: {
