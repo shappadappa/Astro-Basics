@@ -4,7 +4,7 @@ const Loader = () => {
     return (
         <div className="loader">
             {[...Array(4)].map((_element, index) =>(
-                <div key={index} className="ball" style={{"animation-delay": `${index / 10}s`}}></div>
+                <div key={index} className="ball" style={{"animationDelay": `${index / 10}s`}}></div>
             ))}
         </div>
     );
