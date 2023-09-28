@@ -2,7 +2,7 @@ import type { APIRoute } from "astro"
 import { db } from "../../../firebase/server"
 import { getAuth } from "firebase-admin/auth"
 
-export const post: APIRoute = async({request, redirect}) =>{
+export const post: APIRoute = async({request}) =>{
     const sessionCookie = request.headers.get("Authorization")?.split(" ") [1]
     const body = await request.json()
     

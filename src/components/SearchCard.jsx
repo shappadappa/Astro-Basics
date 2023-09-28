@@ -1,6 +1,6 @@
 import styles from "./styles/SearchCard.css"
 
-const SearchCard = ({track}) => {
+const SearchCard = ({track, handleSubmit}) => {
     return (
         <div className="searched-song" key={track.id}>
             <h3>

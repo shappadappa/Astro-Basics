@@ -1,45 +1,6 @@
 import type { APIRoute } from "astro"
 
-export const get: APIRoute = async({request, redirect}) =>{
-    const accessTokenRes = await fetch("https://accounts.spotify.com/api/token", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: `grant_type=client_credentials&client_id=${import.meta.env.SPOTIFY_CLIENT_ID}&client_secret=${import.meta.env.SPOTIFY_CLIENT_SECRET}`
-    })
-
-    const accessTokenJson = await accessTokenRes.json()
-
-    if(!accessTokenRes.ok){
-        return new Response(JSON.stringify({error: accessTokenJson.error}), {status: 500})
-    }
-
-    if(!request.headers.get("Spotify-Id")){
-        return new Response(JSON.stringify({error: "Spotify ID required"}), {status: 400})
-    }
-
-    const trackRes = await fetch(`https://api.spotify.com/v1/tracks/${request.headers.get("Spotify-Id")}`, {
-        headers: {
-            "Authorization": `Bearer ${accessTokenJson.access_token}`
-        }
-    })
-
-    const trackJson = await trackRes.json()
-    
-    return new Response(JSON.stringify(
-        {track: {
-            album: {name: trackJson.album.name, href: trackJson.album.external_urls.spotify}, 
-            name: trackJson.name, 
-            artists: trackJson.artists.map(artist => {
-                return {name: artist.name, href: artist.external_urls.spotify, id: artist.id}
-            }),
-            href: trackJson.external_urls.spotify
-        }
-    }), {status: 200})
-}
-
-export const post: APIRoute = async({request, redirect}) =>{
+export const post: APIRoute = async({request}) =>{
     const accessTokenRes = await fetch("https://accounts.spotify.com/api/token", {
         method: "POST",
         headers: {
@@ -62,7 +23,6 @@ export const post: APIRoute = async({request, redirect}) =>{
         urlProvided = true
 
         const body = await request.json()
-
         if(body.nextLink){
             url = body.nextLink
         } else{
@@ -107,6 +67,6 @@ export const post: APIRoute = async({request, redirect}) =>{
             return {artists: track.artists, id: track.id, name: track.name, album: track.album}
         }), next: trackJson.tracks.next, previous: trackJson.tracks.previous}), {status: 200})
     } else{
-        return new Response(JSON.stringify({error: trackJson.error}), {status: 500})
+        return new Response(JSON.stringify({error: trackJson.error.message}), {status: trackJson.error.status})
     }
 }

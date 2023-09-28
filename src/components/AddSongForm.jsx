@@ -115,7 +115,7 @@ const AddSongForm = ({sessionCookie}) => {
                 <>
                     <div>
                         {searchedTracks.map(searchedTrack =>(
-                                <SearchCard key={searchedTrack.id} track={searchedTrack}/>
+                                <SearchCard key={searchedTrack.id} track={searchedTrack} handleSubmit={handleSubmit}/>
                             ))
                         }
 

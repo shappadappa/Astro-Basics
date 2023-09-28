@@ -23,6 +23,12 @@ export const post: APIRoute = async ({request, redirect}) => {
     return new Response(JSON.stringify({error: "Password required"}), {status: 400})
   }
   
+  const usernameInUse = !(await db.collection("users").where("username", "==", username).get()).empty
+
+  if(usernameInUse){
+    return new Response(JSON.stringify({error: "Username already in use"}), {status: 400})
+  }
+  
   
   try {
     await auth.createUser({
@@ -30,7 +36,7 @@ export const post: APIRoute = async ({request, redirect}) => {
       password,
       displayName: username,
     }).then(async(user) =>{
-      await db.collection("users").doc(user.uid).set({likes: []})
+      await db.collection("users").doc(user.uid).set({likes: [], username})
     })
   } catch (error: any) {
     return new Response(JSON.stringify({error: error.errorInfo.message}), {status: 400})
