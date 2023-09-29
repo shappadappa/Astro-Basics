@@ -29,8 +29,14 @@ const {id} = Astro.params
 
 const {username, likes: userLikes} = (await db.collection("users").doc(id).get()).data()
 
-const userLikedSongs = (await db.collection("songs").get()).docs.map(song => song.data()).filter(song => userLikes.includes(song.spotifyId))
-const addedSongs = (await db.collection("songs").get()).docs.map(song => song.data()).filter(song => song.userUid === id)
+const userLikedSongs = (await db.collection("songs").where("__name__", "in", userLikes).get()).docs.map(song => ({
+    id: song.id, 
+    ...song.data()
+}))
+const addedSongs = (await db.collection("songs").where("userUid", "==", id).get()).docs.map(song => ({
+    id: song.id, 
+    ...song.data()
+}))
 
 let loggedInUserLikedSongs = (await db.collection("users").doc(user.uid).get()).data().likes
 ---
@@ -49,7 +55,17 @@ let loggedInUserLikedSongs = (await db.collection("users").doc(user.uid).get()).
 
                     <div class="songs">
                         {userLikedSongs.map(song => (
-                            <SongCard client:only="react" loggedInUserId={user.uid} userId={song.userUid} spotifyId={song.spotifyId} sessionCookie={sessionCookie.value} alreadyLiked={loggedInUserLikedSongs.includes(song.spotifyId)} forceRefresh={true}/>
+                            <SongCard 
+                                client:only="react" 
+                                loggedInUserId={user.uid} 
+                                userId={song.userUid} 
+                                spotifyId={song.id} 
+                                sessionCookie={sessionCookie.value} 
+                                alreadyLiked={loggedInUserLikedSongs.includes(song.id)} 
+                                forceRefresh={true}
+                                likesCount={song.likes}
+                                createdAt={song.createdAt}
+                            />
                         ))}
                     </div>
                 </>
@@ -66,7 +82,17 @@ let loggedInUserLikedSongs = (await db.collection("users").doc(user.uid).get()).
 
                     <div class="songs">
                         {addedSongs.map(song => (
-                            <SongCard client:only="react" loggedInUserId={null} userId={null} spotifyId={song.spotifyId} sessionCookie={sessionCookie.value} alreadyLiked={loggedInUserLikedSongs.includes(song.spotifyId)} forceRefresh={true}/>
+                            <SongCard 
+                                client:only="react" 
+                                loggedInUserId={null} 
+                                userId={null} 
+                                spotifyId={song.id} 
+                                sessionCookie={sessionCookie.value} 
+                                alreadyLiked={loggedInUserLikedSongs.includes(song.id)} 
+                                forceRefresh={true}
+                                likesCount={song.likes}
+                                createdAt={song.createdAt}
+                            />
                         ))}
                     </div>
                 </>
@@ -115,28 +141,30 @@ let loggedInUserLikedSongs = (await db.collection("users").doc(user.uid).get()).
     }
 </style>
 
-<script define:vars={{ sessionCookie, id }}>
-    const deleteProfile = async() =>{
-        const res = await fetch(`/api/users/${id}`, {
-            method: "DELETE",
-            headers: {
-                "Authorization": `Bearer ${sessionCookie.value}`
+<script define:vars={{ sessionCookie, decodedCookie, id }}>
+    if(decodedCookie.uid === id){
+        const deleteProfile = async() =>{
+            const res = await fetch(`/api/users/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${sessionCookie.value}`
+                }
+            })
+
+            const json = await res.json()
+
+            if(res.ok){
+                window.location = "/login"
+                document.cookie = "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+            } else{
+                console.error(json.error)
+            }
+        }
+
+        document.querySelector(".delete-profile").addEventListener("click", async(e) =>{
+            if(confirm("Are you sure you would like to delete your profile (this action is permanent!)")){
+                deleteProfile()
             }
         })
-
-        const json = await res.json()
-
-        if(res.ok){
-            window.location = "/login"
-            document.cookie = "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
-        } else{
-            console.error(json.error)
-        }
     }
-
-    document.querySelector(".delete-profile").addEventListener("click", async(e) =>{
-        if(confirm("Are you sure you would like to delete your profile (this action is permanent!)")){
-            deleteProfile()
-        }
-    })
 </script>

@@ -19,11 +19,16 @@ export const POST: APIRoute = async({request}) =>{
     const userRef = db.collection("users").doc(decodedCookie.user_id)
     let userLikes = (await userRef.get()).data().likes
 
+    const songRef = db.collection("songs").doc(body.spotifyId)
+    let songLikes = (await songRef.get()).data().likes
+
     if(userLikes.includes(body.spotifyId)){
         userLikes.splice(userLikes.indexOf(body.spotifyId), 1)
-        await db.collection("users").doc(decodedCookie.user_id).update({likes: userLikes})
+        await userRef.update({likes: userLikes})
+        await songRef.update({likes: songLikes - 1})
     } else{
-        await db.collection("users").doc(decodedCookie.user_id).update({likes: [...userLikes, body.spotifyId]})
+        await userRef.update({likes: [...userLikes, body.spotifyId]})
+        await songRef.update({likes: songLikes + 1})
     }
 
     return new Response(JSON.stringify({msg: "Hello world"}), {status: 200})

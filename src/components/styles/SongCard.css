@@ -5,17 +5,37 @@
 }
 .song{
     background: linear-gradient(135deg, #fbe4ba, #eaeaea 50%);
-    border: 2px solid #fbe4ba;
+    outline: 2px solid #fbe4ba;
     border-radius: 0.5rem;
     padding: 0.75rem 0.5rem;
     font-size: 1.25rem;
     position: relative;
-    transition: 0.125s ease-out;
+    transition: 
+        scale 0.5s ease-in-out,
+        box-shadow 1s linear,
+        outline 0.125s ease-out,
+        padding-bottom 0.5s ease-in-out;
 }
 .song.liked{
-    transition: 0.25s ease-out;
-    border: 4px solid #ffcc6e;
+    transition: 
+        scale 0.5s ease-in-out,
+        box-shadow 1s linear,
+        outline 0.25s ease-out;
+    outline: 4px solid #ffcc6e;
     background: linear-gradient(135deg, #ffcc6e, #eaeaea 60%)
+}
+.song.expanded{
+    scale: 1.35;
+    z-index: 2;
+    box-shadow: 
+        0 0 20px 2px #fbe4ba,
+        0 0 0 100vw rgba(0, 0, 0, 0.4);
+    padding-bottom: 2rem;
+}
+.song.liked.expanded{
+    box-shadow: 
+        0 0 20px 2px #ffcc6e,
+        0 0 0 100vw rgba(0, 0, 0, 0.4);
 }
 /* h3 transition adapted from https://stackoverflow.com/questions/17212094/fill-background-color-left-to-right-css */
 h3{
@@ -27,14 +47,38 @@ h3{
     padding: 0.25rem 0.5rem;
     border-radius: 0.5rem;
     transition: 0.35s ease-out;
+    position: relative;
+}
+h3 button{
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.1);
+    border-top-right-radius: 0.5rem;
+    font-size: 0.5rem;
+    padding: 0.125rem;
 }
 .song.liked h3{
     background-position: left;
     transition: 0.7s ease-out;
     color: #ffcc6e;
 }
+.song.liked h3 button{
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffcc6e;
+}
 h4{
     margin: 0.5rem 0;
+}
+h6{
+    font-size: 0.75rem;
+    margin: 0.25rem 0;
+    animation: grow-linear 0.5s ease-in-out;
+    padding: 0.125rem 0.5rem;
+    background: #ffcc6e;
+    border-radius: 0.5rem;
+    color: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(0, 0, 0, 0.6);
 }
 a{
     color: inherit;
@@ -53,18 +97,26 @@ a:hover{
     right: 0;
     padding: 0.5rem;
     background: transparent;
+    transition: 0.5s ease-out;
 }
 .song.liked .like{
-    transition: 0.5s ease-out;
     animation: fill-heart 0.75s ease-out;
     color: orange;
     background: radial-gradient(#ffcc6e, transparent 75%);
+}
+.song.liked.expanded .like{
+    background: radial-gradient(orange, transparent 80%);
+    color: #fbe4ba;
 }
 
 @keyframes skeleton-animation{
     0%{background: rgba(0, 0, 0, 0.05)}
     50%{background: rgba(0, 0, 0, 0.08)}
     100%{background: rgba(0, 0, 0, 0.05)}
+}
+@keyframes grow-linear{
+    0%{opacity: 0; font-size: 0}
+    100%{opacity: 1; font-size: 0.75rem}
 }
 @keyframes fill-heart{
     0% {opacity: 0.25}

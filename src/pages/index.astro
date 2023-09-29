@@ -48,7 +48,17 @@ const songs = songsSnapshot.docs.map(doc => ({
 				<h2>🔥 Popular Songs:</h2>
 				<div class="songs">
 					{songs.map(song =>(
-						<SongCard client:only="react" loggedInUserId={user.uid} userId={song.userUid} spotifyId={song.spotifyId} sessionCookie={sessionCookie.value} alreadyLiked={userDoc.likes.includes(song.spotifyId)} forceRefresh={false} />
+						<SongCard 
+							client:only="react" 
+							loggedInUserId={user.uid} 
+							userId={song.userUid} 
+							spotifyId={song.id} 
+							sessionCookie={sessionCookie.value} 
+							alreadyLiked={userDoc.likes.includes(song.id)} 
+							forceRefresh={false} 
+							likesCount={song.likes}
+							createdAt={song.createdAt}
+						/>
 					))}
 				</div>
 			</div>

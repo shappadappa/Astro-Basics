@@ -21,9 +21,9 @@ export const POST: APIRoute = async({request}) =>{
   try {
     const body = await request.json()
 
-    const song = {spotifyId: body.spotifyId, userUid: decodedCookie.uid, createdAt: new Date()}
+    const song = {userUid: decodedCookie.uid, createdAt: new Date(), likes: 0}
 
-    await db.collection("songs").add(song)
+    await db.collection("songs").doc(body.spotifyId).set(song)
 
     return new Response(JSON.stringify(song), {status: 200})
   } catch (error){
