@@ -5,14 +5,20 @@ import { app } from '../firebase/server';
 import { getAuth } from "firebase-admin/auth"
 
 const auth = getAuth(app)
-const sessionCookie = Astro.cookies.get("session").value
+const sessionCookie = Astro.cookies.get("session")
 
 if(sessionCookie){
-	const decodedCookie = await auth.verifySessionCookie(sessionCookie)
-    const user = await auth.getUser(decodedCookie.uid)
+    
+    try{
+        const decodedCookie = await auth.verifySessionCookie(sessionCookie.value)
+        
+        const user = await auth.getUser(decodedCookie.uid)
 
-    if(user){
-        return Astro.redirect("/")
+        if(user){
+            return Astro.redirect("/")
+        }
+    } catch(error){
+        Astro.cookies.delete("session")
     }
 }
 ---

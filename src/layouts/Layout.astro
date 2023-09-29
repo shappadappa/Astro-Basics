@@ -10,11 +10,11 @@ export interface Props {
 const { title } = Astro.props;
 
 const auth = getAuth(app)
-const sessionCookie = Astro.cookies.get("session").value
+const sessionCookie = Astro.cookies.get("session")
 let signedIn = false, decodedCookie
 
 if(sessionCookie){
-    decodedCookie = await auth.verifySessionCookie(sessionCookie)
+    decodedCookie = await auth.verifySessionCookie(sessionCookie.value)
 
 	try{
 		const user = await auth.getUser(decodedCookie.uid)
@@ -93,7 +93,6 @@ if(sessionCookie){
 		position: fixed;
 		top: 0;
 		left: 0;
-		height: 100%;
 		z-index: 999;
 	}
 	nav a{
@@ -106,6 +105,7 @@ if(sessionCookie){
 	}
 	nav.seen{
 		background: #eee;
+		height: 100%;
 		box-shadow: 0 0 50px 10px #bbb;
 		transition: 0.5s ease-out;
 	}

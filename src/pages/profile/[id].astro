@@ -5,17 +5,19 @@ import { getAuth } from "firebase-admin/auth"
 import SongCard from "../../components/SongCard"
 
 const auth = getAuth(app)
-const sessionCookie = Astro.cookies.get("session").value
+const sessionCookie = Astro.cookies.get("session")
 
 if(!sessionCookie){
 	return Astro.redirect("/login")
 }
 
-const decodedCookie = await auth.verifySessionCookie(sessionCookie)
-let user = {}
+let user = {}, decodedCookie
 try{
+    decodedCookie = await auth.verifySessionCookie(sessionCookie.value)
+
 	user = await auth.getUser(decodedCookie.uid)
 } catch(error){
+    Astro.cookies.delete("session")
 	return Astro.redirect("/login")
 }
 
@@ -35,35 +37,68 @@ let loggedInUserLikedSongs = (await db.collection("users").doc(user.uid).get()).
 
 <Layout title="Astro Basics">
     <main>
-        <h1>{user.displayName === username ? "Your" : `${username}'s`} Profile</h1>
+        <h1>
+            <span>{decodedCookie.uid === id  ? "Your" : `${username}'s`} Profile</span>
+            {decodedCookie.uid === id && <button class="delete-profile">Delete Profile</button>}
+        </h1>
 
-        {userLikedSongs && 
-            <div class="songs-container liked">
-                <h2>❤ Liked Songs:</h2>
+        <div class="songs-container liked">
+            {userLikedSongs.length > 0 ? 
+                <>
+                    <h2>❤ Liked Songs:</h2>
 
-                <div class="songs">
-                    {userLikedSongs.map(song => (
-                        <SongCard client:only="react" loggedInUserId={user.uid} userId={song.userUid} spotifyId={song.spotifyId} sessionCookie={sessionCookie} alreadyLiked={loggedInUserLikedSongs.includes(song.spotifyId)} forceRefresh={true}/>
-                    ))}
-                </div>
-            </div>
-        }
+                    <div class="songs">
+                        {userLikedSongs.map(song => (
+                            <SongCard client:only="react" loggedInUserId={user.uid} userId={song.userUid} spotifyId={song.spotifyId} sessionCookie={sessionCookie.value} alreadyLiked={loggedInUserLikedSongs.includes(song.spotifyId)} forceRefresh={true}/>
+                        ))}
+                    </div>
+                </>
+            :
+                <h2>💔 No liked songs</h2>
+            }
+        </div>
 
-        {addedSongs && 
-            <div class="songs-container added">
-                <h2>🎧 Added Songs:</h2>
+        
+        <div class="songs-container added">
+            {addedSongs.length > 0 ?
+                <>
+                    <h2>🎧 Added Songs:</h2>
 
-                <div class="songs">
-                    {addedSongs.map(song => (
-                        <SongCard client:only="react" loggedInUserId={null} userId={null} spotifyId={song.spotifyId} sessionCookie={sessionCookie} alreadyLiked={loggedInUserLikedSongs.includes(song.spotifyId)} forceRefresh={true}/>
-                    ))}
-                </div>
-            </div>
-        }
+                    <div class="songs">
+                        {addedSongs.map(song => (
+                            <SongCard client:only="react" loggedInUserId={null} userId={null} spotifyId={song.spotifyId} sessionCookie={sessionCookie.value} alreadyLiked={loggedInUserLikedSongs.includes(song.spotifyId)} forceRefresh={true}/>
+                        ))}
+                    </div>
+                </>
+            :
+                <h2>🔇 No added songs</h2>
+            }
+        </div>
     </main>
 </Layout>
 
 <style>
+    h1{
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+    }
+    h1 span{
+        flex-grow: 1;
+    }
+    .delete-profile{
+        background: #710000;
+        border-radius: 0.5rem;
+        padding: 0.5rem;
+        color: white;
+        font-size: 1.5rem;
+        border: 2px solid transparent;
+        transition: 0.5s ease-out;
+    }
+    .delete-profile:hover{
+        background: #5a0000;
+        border-color: #3f0000;
+    }
     .songs-container{
         margin: 2rem 0;
         border: 1px solid #cacaca;
@@ -79,3 +114,29 @@ let loggedInUserLikedSongs = (await db.collection("users").doc(user.uid).get()).
         background: rgba(41, 214, 101, 0.25);
     }
 </style>
+
+<script define:vars={{ sessionCookie, id }}>
+    const deleteProfile = async() =>{
+        const res = await fetch(`/api/users/${id}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${sessionCookie.value}`
+            }
+        })
+
+        const json = await res.json()
+
+        if(res.ok){
+            window.location = "/login"
+            document.cookie = "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
+        } else{
+            console.error(json.error)
+        }
+    }
+
+    document.querySelector(".delete-profile").addEventListener("click", async(e) =>{
+        if(confirm("Are you sure you would like to delete your profile (this action is permanent!)")){
+            deleteProfile()
+        }
+    })
+</script>

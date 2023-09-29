@@ -10,7 +10,13 @@ export const POST: APIRoute = async({request}) =>{
     return new Response(JSON.stringify({error: "Session cookie required"}), {status: 400})
   }
 
-  const decodedCookie = await auth.verifySessionCookie(sessionCookie)
+  let decodedCookie
+
+  try{
+    decodedCookie = await auth.verifySessionCookie(sessionCookie)
+  } catch(error: any){
+    return new Response(JSON.stringify({error: error.errorInfo.message}), {status: 401})
+  }
   
   try {
     const body = await request.json()

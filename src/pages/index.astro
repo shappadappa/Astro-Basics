@@ -5,21 +5,19 @@ import { getAuth } from "firebase-admin/auth"
 import SongCard from '../components/SongCard';
 
 const auth = getAuth(app)
-const sessionCookie = Astro.cookies.get("session").value
+const sessionCookie = Astro.cookies.get("session")
 
 if(!sessionCookie){
 	return Astro.redirect("/login")
 }
 
-const decodedCookie = await auth.verifySessionCookie(sessionCookie)
 let user = {}
 try{
+	const decodedCookie = await auth.verifySessionCookie(sessionCookie.value)
+
 	user = await auth.getUser(decodedCookie.uid)
 } catch(error){
-	return Astro.redirect("/login")
-}
-
-if(!user){
+	Astro.cookies.delete("session")
 	return Astro.redirect("/login")
 }
 
@@ -36,7 +34,7 @@ const songs = songsSnapshot.docs.map(doc => ({
 
 <Layout title="Astro Basics">
 	<main>
-		<h1>Welcome to <span class="text-gradient">Musical Stockpile</span>, {user.displayName}</h1>
+		<h1>Welcome to <span class="text-gradient">Musical Stockpile</span>, <br />{user.displayName}</h1>
 		<p>
 			The place for sharing your favourite songs, with your favourite people.
 
@@ -50,7 +48,7 @@ const songs = songsSnapshot.docs.map(doc => ({
 				<h2>🔥 Popular Songs:</h2>
 				<div class="songs">
 					{songs.map(song =>(
-						<SongCard client:only="react" loggedInUserId={user.uid} userId={song.userUid} spotifyId={song.spotifyId} sessionCookie={sessionCookie} alreadyLiked={userDoc.likes.includes(song.spotifyId)} forceRefresh={false} />
+						<SongCard client:only="react" loggedInUserId={user.uid} userId={song.userUid} spotifyId={song.spotifyId} sessionCookie={sessionCookie.value} alreadyLiked={userDoc.likes.includes(song.spotifyId)} forceRefresh={false} />
 					))}
 				</div>
 			</div>
@@ -62,6 +60,9 @@ const songs = songsSnapshot.docs.map(doc => ({
 	a{
 		text-decoration: none;
 		color: inherit;
+	}
+	a:hover{
+		text-decoration: none;
 	}
 	button{
 		background: linear-gradient(90deg, #eee, #a9eca9);
