@@ -37,6 +37,7 @@ if(sessionCookie){
 	</head>
 	<body>
 		<Navbar client:only="react" userId={decodedCookie && decodedCookie.uid ? decodedCookie.uid : null}/>
+		<button class="toggle-dark-mode"></button>
 		<slot />
 	</body>
 </html>
@@ -56,15 +57,22 @@ if(sessionCookie){
 	}
 	body{
 		font-family: Inter, Arial, Helvetica, sans-serif;
-		background-image: url("/svg/music-note.svg");
+		background-image: url("/svg/dark-music-note.svg");
 		background-size: 10% 50px;
 		background-position: 0;
 		background-repeat: repeat;
+	}
+	body.dark{
+		background-image: url("/svg/light-music-note.svg");
+		background-color: #222;
 	}
 	.text-gradient {
 		background-image: linear-gradient(90deg, #333, green);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
+	}
+	.dark .text-gradient{
+		background-image: linear-gradient(90deg, #dadada, lightgreen);
 	}
 	.error{
 		position: fixed;
@@ -107,7 +115,12 @@ if(sessionCookie){
 		background: #eee;
 		height: 100%;
 		box-shadow: 0 0 50px 10px #bbb;
-		transition: 0.5s ease-out;
+		transition: all 0.5s ease-out, background 0, box-shadow 0;
+	}
+	.dark nav.seen{
+		background: #222;
+		color: #dadada;
+		box-shadow: 0 0 50px 10px #555;
 	}
 	nav .toggle-visiblity-container{
 		padding: 0.75rem;
@@ -117,6 +130,10 @@ if(sessionCookie){
 		background: rgba(255, 255, 255, 0.75);
 		border-bottom-right-radius: 1rem;
 	}
+	.dark nav .toggle-visiblity-container{
+		background: rgba(0, 0, 0, 0.5);
+		color: #dadada;
+	}
 	nav.seen .toggle-visiblity-container{
 		background: none;
 	}
@@ -124,7 +141,9 @@ if(sessionCookie){
 		background: transparent;
 		display: grid;
 		place-items: center;
-		transition: 0.5s ease-out;
+	}
+	.dark nav .toggle-visiblity-container button{
+		color: #dadada;
 	}
 	nav .toggle-visiblity-container button:focus-within{
 		outline: none;
@@ -150,6 +169,10 @@ if(sessionCookie){
 		border-radius: 0.25rem;
 		padding: 0.25rem;
 	}
+	.dark nav .links li.account-modifier{
+		background: white;
+		color: #444;
+	}
 	nav .links a{
 		padding: 0.5rem;
 	}
@@ -157,8 +180,23 @@ if(sessionCookie){
 		scale: 1.5;
 		margin-right: 1rem;
 	}
+	.toggle-dark-mode{
+		position: fixed;
+		top: 0;
+		right: 0;
+		padding: 1rem;
+		background: #eaeaea;
+		border-bottom-left-radius: 0.5rem;
+	}
+	.dark .toggle-dark-mode{
+		background: #333;
+		color: white;
+	}
+	.toggle-dark-mode svg{
+		scale: 2;
+	}
 
-	main {
+	main{
 		margin: 4rem auto;
 		padding: 2rem;
 		max-width: 800px;
@@ -167,18 +205,30 @@ if(sessionCookie){
 		box-shadow: 0 0 50px 10px #eaeaea;
 		color: #555;
 	}
-	h1 {
+	.dark main{
+		background: #444;
+		color: #eaeaea;
+		box-shadow: 0 0 50px 10px #444;
+	}
+	h1{
 		font-size: 2.75rem;
 		font-weight: 800;
 		margin: 0;
 		color: #333;
-		border-bottom: 1px dotted black;
+		border-bottom: 1px dotted #333;
 		text-align: center;
+	}
+	.dark h1{
+		color: #dadada;
+		border-bottom-color: #dadada;
 	}
 	.songs-container{
 		padding: 2rem;
 		box-shadow: 0 0 50px 10px #fff9ed inset;
 		border-radius: 1rem;
+	}
+	.dark .songs-container{
+		box-shadow: 0 0 50px 10px #443c30 inset;
 	}
 	.songs-container h2{
 		font-size: 2rem;
@@ -198,10 +248,16 @@ if(sessionCookie){
 		padding: 0.5rem 1rem;
 		line-height: 1.75rem;
 	}
+	.dark p, .dark form{
+		background: #555;
+	}
 	form{
 		border: 1px dotted limegreen;
 		margin: 2rem 0;
 		font-size: 1.25rem;
+	}
+	.dark form{
+		border-color: green;
 	}
 	form label{
 		text-decoration: underline;
@@ -230,8 +286,15 @@ if(sessionCookie){
 		transition: 1s ease-out;
 		margin: 2rem;
 	}
+	.dark form input[type="submit"]{
+		background: green;
+		border-color: darkgreen;
+	}
 	form input[type="submit"]:hover{
 		background: green;
+	}
+	.dark form input[type="submit"]:hover{
+		background: darkgreen;
 	}
 	form .view-password{
 		padding: 0.125rem 0.25rem;
@@ -248,3 +311,53 @@ if(sessionCookie){
 		100%{transform: translateY(0)}
 	}
 </style>
+
+<script>
+	const body = document.querySelector("body")
+	const toggleBtn = document.querySelector(".toggle-dark-mode")
+
+	const toggleDark = (dark: boolean) =>{
+		document.cookie = dark ? "dark=true" : "dark=false"
+		
+		toggleBtn.innerHTML = dark ? 
+		// sun
+			`
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+					<path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6zm0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
+				</svg>
+			`
+		:
+		// moon
+			`
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+					<path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278zM4.858 1.311A7.269 7.269 0 0 0 1.025 7.71c0 4.02 3.279 7.276 7.319 7.276a7.316 7.316 0 0 0 5.205-2.162c-.337.042-.68.063-1.029.063-4.61 0-8.343-3.714-8.343-8.29 0-1.167.242-2.278.681-3.286z"/>
+				</svg>
+			`
+	}
+
+	// adapted from https://stackoverflow.com/questions/10730362/get-cookie-by-name
+	const darkModeCookie = `; ${document.cookie}`.split(`; dark=`).pop().split(';').shift()
+
+	// if the user accesses the website for the first time, use the system preference. otherwise, use the value stored in the cookie
+	if(darkModeCookie.length === 0){
+		if(window.matchMedia("(prefers-color-scheme: dark)").matches){
+			document.cookie = "dark=true"
+			body.classList.add("dark")
+			toggleDark(true)
+		} else{
+			document.cookie = "dark=false"
+		}
+	} else{
+		if(darkModeCookie === "true"){
+			body.classList.add("dark")
+			toggleDark(true)
+		} else{
+			toggleDark(false)
+		}
+	}
+
+	toggleBtn.addEventListener("click", e =>{
+		body.classList.toggle("dark")
+		toggleDark(body.classList.contains("dark"))
+	})
+</script>
