@@ -115,6 +115,8 @@ const SongCard = ({loggedInUserId, userId, spotifyId, sessionCookie, alreadyLike
                             <>
                                 <h6>Added <span> {formatDistanceToNow(createdAt._seconds * 1000, {addSuffix: true, includeSeconds: true})}</span></h6>
                                 <h6>{likes} like{likes !== 1 && "s"}</h6>
+
+                                <iframe src={`https://open.spotify.com/embed/track/${spotifyId}?utm_source=generator`} allowFullScreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
                             </>
                         }
 

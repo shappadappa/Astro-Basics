@@ -27,6 +27,8 @@ const SearchCard = ({track, handleSubmit}) => {
                 </a>
             </h4>
 
+            <iframe src={`https://open.spotify.com/embed/track/${track.id}?utm_source=generator`} allowFullScreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+
             <button className="add-song" title="Add Song" onClick={e => handleSubmit(e, track.id)}>+</button>
         </div>
     );
