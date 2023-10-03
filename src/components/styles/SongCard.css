@@ -114,6 +114,28 @@ a:hover{
     background: radial-gradient(orange, transparent 80%);
     color: #fbe4ba;
 }
+.remove{
+    position: absolute;
+    top: 0;
+    text-align: center;
+    left: 50%;
+    translate: -50%;
+    width: 40%;
+    padding: 0.125rem 0.25rem;
+    background: rgba(255, 0, 0, 0.1);
+    border-radius: 0-0 0.25rem 0.25rem;
+    font-size: 0.75rem;
+    transition: all 1s ease-out, background 1s linear;
+}
+.song.liked .remove{
+    background: rgba(255, 0, 0, 0.5);
+    color: white;
+}
+.remove:hover{
+    width: 50%;
+    font-size: 0.85rem;
+    background: rgba(255, 0, 0, 0.2);
+}
 
 @keyframes skeleton-animation{
     0%{background: rgba(0, 0, 0, 0.05)}

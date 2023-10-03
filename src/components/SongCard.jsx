@@ -11,6 +11,7 @@ const SongCard = ({loggedInUserId, userId, spotifyId, sessionCookie, alreadyLike
     const [liked, setLiked] = useState(alreadyLiked)
     const [error, setError] = useState("")
 
+
     useEffect(() => {
         const fetchDetails = async() =>{
             // fetch song details
@@ -67,12 +68,30 @@ const SongCard = ({loggedInUserId, userId, spotifyId, sessionCookie, alreadyLike
             window.location.reload(false)
         }
     }
+
+    const removeSong = async() =>{
+        if(confirm("Are you sure you would like to remove this song?")){
+            const res = await fetch(`/api/songs/${spotifyId}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${sessionCookie}`
+                }
+            })
+
+            const json = await res.json()
+
+            if(res.ok){
+                window.location.reload(false)
+            } else{
+                setError(json.error)
+            }
+        }
+    }
     
     return (
         <>
             {error && <div className="error"><span>!</span>{error}</div>}
             <div className={`song${liked ? " liked" : ""}${expanded ? " expanded" : ""}`}>
-
                 {isLoading ? 
                     <>
                         <h3 className="skeleton">‎</h3>
@@ -131,6 +150,8 @@ const SongCard = ({loggedInUserId, userId, spotifyId, sessionCookie, alreadyLike
                                 </svg>
                             }
                         </button>
+
+                        {loggedInUserId === userId && <button className="remove" onClick={removeSong}>Remove Song</button>}
                     </>
                 }
             </div>
