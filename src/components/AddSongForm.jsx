@@ -2,6 +2,7 @@ import { useState } from "react"
 import SearchCard from "./SearchCard"
 import Loader from "./Loader"
 import styles from "./styles/AddSongForm.css"
+import { navigate } from "astro:transitions/client"
 
 const AddSongForm = ({sessionCookie}) => {
     const [error, setError] = useState("")
@@ -33,6 +34,8 @@ const AddSongForm = ({sessionCookie}) => {
                 setNotFound(false)
             }
 
+            console.log(json.tracks)
+
             setSearchedTracks(json.tracks)
             setNextLink(json.next)
             setPreviousLink(json.previous)
@@ -44,6 +47,7 @@ const AddSongForm = ({sessionCookie}) => {
     }
 
     const handleLoad = async(next) =>{
+        setIsLoading(true)
         setError("")
         setSearchedTracks([])
 
@@ -64,6 +68,8 @@ const AddSongForm = ({sessionCookie}) => {
         } else{
             setError(json.error)
         }
+
+        setIsLoading(false)
     }
 
     const handleSubmit = async(e, spotifyId) =>{
@@ -82,7 +88,7 @@ const AddSongForm = ({sessionCookie}) => {
         const json = await res.json()
 
         if(res.ok){
-            window.location = "/"
+            navigate("/", {history: "push"})
         } else{
             setError(json.error)
         }

@@ -38,7 +38,7 @@ if(sessionCookie){
 		<ViewTransitions />
 	</head>
 	<body transition:animate="fade">
-		<Navbar client:only="react" userId={decodedCookie && decodedCookie.uid ? decodedCookie.uid : null} transition:persist/>
+		<Navbar client:only="react" userId={decodedCookie && decodedCookie.uid ? decodedCookie.uid : null} transition:persist originalLocation={Astro.url.pathname} />
 		<button class="toggle-dark-mode" transition:persist></button>
 		<slot />
 	</body>
@@ -91,6 +91,7 @@ if(sessionCookie){
 		padding: 1.5rem 0;
 		border-radius: 0 0 1rem 1rem;
 		animation: drop-down 0.75s ease-out;
+		z-index: 998;
 	}
 	.error span{
 		left: 1rem;
@@ -159,8 +160,11 @@ if(sessionCookie){
 		letter-spacing: -1.5px;
 	}
 	nav .links{
-		animation: slide-right 0.5s ease-out;
 		font-size: 1.5rem;
+	}
+	nav.not-played .links{
+		opacity: 0;
+		animation: slide-right 0.5s ease-out forwards;
 	}
 	nav .links li{
 		margin: 0.5rem 1rem;
@@ -175,6 +179,19 @@ if(sessionCookie){
 	.dark nav .links li.account-modifier{
 		background: white;
 		color: #444;
+	}
+	nav .links li.active{
+		background: #dadada;
+		border-radius: 0.25rem;
+	}
+	.dark nav .links li.active{
+		background: #444;
+	}
+	nav .links li.active.account-modifier{
+		background: #444;
+	}
+	.dark nav .links li.active.account-modifier{
+		background: #ccc;
 	}
 	nav .links a{
 		padding: 0.5rem;
@@ -307,7 +324,7 @@ if(sessionCookie){
 
 	@keyframes slide-right{
 		0%{translate: -100%}
-		100%{translate: 0}
+		100%{translate: 0; opacity: 1}
 	}
 	@keyframes drop-down{
 		0%{transform: translateY(-100%)}
@@ -367,5 +384,17 @@ if(sessionCookie){
 	}
 
 	colourMode()
-	document.addEventListener("astro:after-swap", colourMode)
+	document.addEventListener("astro:after-swap", () =>{
+		colourMode()
+		
+		document.querySelectorAll("nav .links li a").forEach(a =>{
+			const pathname = a.href.replace(window.location.origin, "")
+
+			if(pathname === window.location.pathname){
+				a.parentElement.classList.add("active")
+			} else{
+				a.parentElement.classList.remove("active")
+			}
+		})
+	})
 </script>

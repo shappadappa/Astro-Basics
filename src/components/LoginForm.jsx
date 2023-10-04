@@ -25,6 +25,7 @@ const LoginForm = ({signup}) => {
         const json = await res.json()
 
         if(res.ok){
+            window.location.reload(false)
             window.location = "/"
         } else{
             setError(json.error)
