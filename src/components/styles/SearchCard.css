@@ -11,12 +11,26 @@
     position: relative;
     animation: fade-in 1s ease-out;
 }
+.searched-song.added{
+    opacity: 0.6;
+}
 .searched-song h3{
     font-weight: bold;
     font-size: 1.75rem;
     border-bottom: 1px dotted #29d665;
     padding-bottom: 0.5rem;
     margin-bottom: 1rem;
+    position: relative;
+}
+.searched-song h3 .explicit{
+    position: absolute;
+    right: 0;
+    top: 0;
+    background: #ccc;
+    color: #777;
+    padding: 0.25rem;
+    font-size: 1rem;
+    border-radius: 0.25rem;
 }
 .searched-song h4{
     font-size: 1.25rem;
@@ -49,5 +63,9 @@
     border-radius: 100%;
     padding: 0.125rem 0.5rem;
     background: #2cd266;
-    margin-top: 1rem;
+    margin-left: 1rem;
+    display: block;
+}
+.searched-song .add-song:disabled{
+    background: #5ad284;
 }

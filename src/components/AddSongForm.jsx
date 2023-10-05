@@ -34,8 +34,6 @@ const AddSongForm = ({sessionCookie}) => {
                 setNotFound(false)
             }
 
-            console.log(json.tracks)
-
             setSearchedTracks(json.tracks)
             setNextLink(json.next)
             setPreviousLink(json.previous)

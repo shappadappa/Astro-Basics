@@ -2,11 +2,13 @@ import styles from "./styles/SearchCard.css"
 
 const SearchCard = ({track, handleSubmit}) => {
     return (
-        <div className="searched-song" key={track.id}>
+        <div className={`searched-song${track.alreadyAdded ? " added" : ""}`} key={track.id}>
             <h3>
                 🎶 <a target="_blank" href={`https://open.spotify.com/track/${track.id}`}>
                     {track.name}
                 </a>
+
+                {track.explicit && <span className="explicit">E</span>}
             </h3>
             <h4>By {track.artists.map((artist, index) =>(
                 <span key={artist.id}>
@@ -29,7 +31,8 @@ const SearchCard = ({track, handleSubmit}) => {
 
             <iframe src={`https://open.spotify.com/embed/track/${track.id}?utm_source=generator`} allowFullScreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 
-            <button className="add-song" title="Add Song" onClick={e => handleSubmit(e, track.id)}>+</button>
+            <button className="add-song" title="Add Song" onClick={e => handleSubmit(e, track.id)} disabled={track.alreadyAdded}>+</button>
+            {track.alreadyAdded && <p>This song has already been added by a user</p>}
         </div>
     );
 }

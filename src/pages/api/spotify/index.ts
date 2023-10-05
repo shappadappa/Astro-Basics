@@ -1,4 +1,5 @@
 import type { APIRoute } from "astro"
+import { db } from "../../../firebase/server"
 
 export const POST: APIRoute = async({request}) =>{
     const accessTokenRes = await fetch("https://accounts.spotify.com/api/token", {
@@ -63,8 +64,15 @@ export const POST: APIRoute = async({request}) =>{
     const trackJson = await trackRes.json()
 
     if(trackRes.ok){
-        return new Response(JSON.stringify({tracks: trackJson.tracks.items.map(track => {
-            return {artists: track.artists, id: track.id, name: track.name, album: track.album}
+        let songAdded = {}
+
+        for(const track of trackJson.tracks.items){
+            const songSnapshot = await db.collection("songs").doc(track.id).get()
+            songAdded [track.id] = songSnapshot.exists
+        }
+
+        return new Response(JSON.stringify({tracks: trackJson.tracks.items.map((track, index) => {
+            return {artists: track.artists, id: track.id, name: track.name, album: track.album, alreadyAdded: songAdded [track.id], explicit: track.explicit}
         }), next: trackJson.tracks.next, previous: trackJson.tracks.previous}), {status: 200})
     } else{
         return new Response(JSON.stringify({error: trackJson.error.message}), {status: trackJson.error.status})

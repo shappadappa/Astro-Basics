@@ -17,10 +17,15 @@ export const POST: APIRoute = async({request}) =>{
   } catch(error: any){
     return new Response(JSON.stringify({error: error.errorInfo.message}), {status: 401})
   }
-  
-  try {
-    const body = await request.json()
 
+  const body = await request.json()
+  const songSnapshot = await db.collection("songs").doc(body.spotifyId).get()
+
+  if(songSnapshot.exists){
+    return new Response(JSON.stringify({error: "Song has already been added. Try another song"}), {status: 400})
+  }
+  
+  try{
     const song = {userUid: decodedCookie.uid, createdAt: new Date(), likes: 0}
 
     await db.collection("songs").doc(body.spotifyId).set(song)
