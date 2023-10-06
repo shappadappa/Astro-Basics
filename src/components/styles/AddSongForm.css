@@ -37,3 +37,11 @@
     0%{opacity: 0}
     100%{opacity: 1}
 }
+
+@media (max-width: 768px){
+    .load-buttons-container{
+        max-width: 75%;
+        gap: 1rem;
+        justify-content: space-between;
+    }
+}

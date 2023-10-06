@@ -30,13 +30,13 @@
     z-index: 2;
     box-shadow: 
         0 0 20px 2px #fbe4ba,
-        0 0 0 100vw rgba(0, 0, 0, 0.4);
+        0 0 0 1000vh rgba(0, 0, 0, 0.4);
     padding-bottom: 2rem;
 }
 .song.liked.expanded{
     box-shadow: 
         0 0 20px 2px #ffcc6e,
-        0 0 0 100vw rgba(0, 0, 0, 0.4);
+        0 0 0 1000vh rgba(0, 0, 0, 0.4);
 }
 /* h3 transition adapted from https://stackoverflow.com/questions/17212094/fill-background-color-left-to-right-css */
 h3{
@@ -124,7 +124,7 @@ a:hover{
     padding: 0.125rem 0.25rem;
     background: rgba(255, 0, 0, 0.1);
     border-radius: 0-0 0.25rem 0.25rem;
-    font-size: 0.75rem;
+    font-size: clamp(0.75rem, 35%, 0.9rem);
     transition: all 1s ease-out, background 1s linear;
 }
 .song.liked .remove{
@@ -151,4 +151,26 @@ a:hover{
     25% {rotate: -15deg}
     50% {rotate: 15deg}
     100% {opacity: 1; rotate: 0deg}
+}
+
+@media (max-width: 768px){
+    .song{
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        margin: 1rem 0;
+    }
+    .song.expanded{
+        scale: 1.1;
+    }
+    iframe{
+        margin: 0;
+        width: 100%;
+        padding: 0;
+    }
+}
+@media (max-width: 360px){
+    .song{
+        padding: 0.5rem;
+    }
 }
