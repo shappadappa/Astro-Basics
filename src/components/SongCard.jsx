@@ -26,14 +26,16 @@ const SongCard = ({loggedInUserId, userId, spotifyId, sessionCookie, alreadyLike
             }
 
             // fetch user details
-            const userRes = await fetch(`/api/users/${userId}`)
+            if(userId){
+                const userRes = await fetch(`/api/users/${userId}`)
 
-            const userJson = await userRes.json()
+                const userJson = await userRes.json()
 
-            if(userRes.ok){
-                setUsername(userJson)
+                if(userRes.ok){
+                    setUsername(userJson)
+                }
             }
-
+            
             setIsLoading(false)
         }
       

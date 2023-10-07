@@ -18,7 +18,7 @@ const Navbar = ({userId, originalLocation}) => {
     
     return (
         <nav className={`${seen ? "seen" : ""}${!animationPlayed ? " not-played" : ""}`}>
-            <div className="toggle-visiblity-container">
+            <div className="toggle-visibility-container">
                 <button onClick={() =>{
                     if(animationPlayed){
                         setAnimationPlayed(false)

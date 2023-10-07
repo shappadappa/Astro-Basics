@@ -1,0 +1,32 @@
+---
+import Layout from "../layouts/Layout.astro"
+import { app } from '../firebase/server';
+import { getAuth } from "firebase-admin/auth"
+
+const auth = getAuth(app)
+const sessionCookie = Astro.cookies.get("session")
+
+if(!sessionCookie){
+	return Astro.redirect("/login")
+}
+
+try{
+    const decodedCookie = await auth.verifySessionCookie(sessionCookie.value)
+    
+    const user = await auth.getUser(decodedCookie.uid)
+} catch(error){
+    Astro.cookies.delete("session")
+	return Astro.redirect("/login")
+}
+---
+
+<Layout title="Astro Basics">
+    <main>
+        <h1>The requested page was not found</h1>
+
+        <div class="not-found">
+            <p>How did you end up here?</p>
+            <a href="/">Home</a>
+        </div>
+    </main>
+</Layout>

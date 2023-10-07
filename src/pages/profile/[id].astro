@@ -3,7 +3,6 @@ import Layout from "../../layouts/Layout.astro"
 import { app, db } from "../../firebase/server"
 import { getAuth } from "firebase-admin/auth"
 import SongCard from "../../components/SongCard"
-import { navigate } from "astro:transitions/client"
 
 const auth = getAuth(app)
 const sessionCookie = Astro.cookies.get("session")
@@ -28,82 +27,101 @@ if(!user){
 
 const {id} = Astro.params
 
-const {username, likes: userLikes} = (await db.collection("users").doc(id).get()).data()
+const userSnapshot = await db.collection("users").doc(id).get()
 
-let userLikedSongs = []
-if(userLikes.length > 0){
-    userLikedSongs = (await db.collection("songs").where("__name__", "in", userLikes).get()).docs.map(song => ({
+let username, userLikes, userLikedSongs = [], addedSongs, loggedInUserLikedSongs
+
+if(userSnapshot.exists){
+    username = userSnapshot.data().username
+    userLikes = userSnapshot.data().likes
+
+    if(userLikes.length > 0){
+        userLikedSongs = (await db.collection("songs").where("__name__", "in", userLikes).get()).docs.map(song => ({
+            id: song.id, 
+            ...song.data()
+        }))
+    }
+
+    addedSongs = (await db.collection("songs").where("userUid", "==", id).get()).docs.map(song => ({
         id: song.id, 
         ...song.data()
     }))
-}
-const addedSongs = (await db.collection("songs").where("userUid", "==", id).get()).docs.map(song => ({
-    id: song.id, 
-    ...song.data()
-}))
 
-let loggedInUserLikedSongs = (await db.collection("users").doc(user.uid).get()).data().likes
+    loggedInUserLikedSongs = (await db.collection("users").doc(user.uid).get()).data().likes
+}
 ---
 
 <Layout title="Astro Basics">
     <main>
-        <h1>
-            <span>{decodedCookie.uid === id  ? "Your" : `${username}'s`} Profile</span>
-            {decodedCookie.uid === id && <button class="delete-profile">Delete Profile</button>}
-        </h1>
+        {userSnapshot.exists ?
+            <>
+                <h1>
+                    <span>{decodedCookie.uid === id  ? "Your" : `${username}'s`} Profile</span>
+                    {decodedCookie.uid === id && <button class="delete-profile">Delete Profile</button>}
+                </h1>
 
-        <div class="songs-container liked">
-            {userLikedSongs.length > 0 ? 
-                <>
-                    <h2>❤ Liked Songs:</h2>
+                <div class="songs-container liked">
+                    {userLikedSongs.length > 0 ? 
+                        <>
+                            <h2>❤ Liked Songs:</h2>
 
-                    <div class="songs">
-                        {userLikedSongs.map(song => (
-                            <SongCard 
-                                client:only="react" 
-                                loggedInUserId={user.uid} 
-                                userId={song.userUid} 
-                                spotifyId={song.id} 
-                                sessionCookie={sessionCookie.value} 
-                                alreadyLiked={loggedInUserLikedSongs.includes(song.id)} 
-                                forceRefresh={true}
-                                likesCount={song.likes}
-                                createdAt={song.createdAt}
-                            />
-                        ))}
-                    </div>
-                </>
-            :
-                <h2>💔 No liked songs</h2>
-            }
-        </div>
+                            <div class="songs">
+                                {userLikedSongs.map(song => (
+                                    <SongCard 
+                                        client:only="react" 
+                                        loggedInUserId={user.uid} 
+                                        userId={song.userUid} 
+                                        spotifyId={song.id} 
+                                        sessionCookie={sessionCookie.value} 
+                                        alreadyLiked={loggedInUserLikedSongs.includes(song.id)} 
+                                        forceRefresh={true}
+                                        likesCount={song.likes}
+                                        createdAt={song.createdAt}
+                                    />
+                                ))}
+                            </div>
+                        </>
+                    :
+                        <h2>💔 No liked songs</h2>
+                    }
+                </div>
 
-        
-        <div class="songs-container added">
-            {addedSongs.length > 0 ?
-                <>
-                    <h2>🎧 Added Songs:</h2>
+                
+                <div class="songs-container added">
+                    {addedSongs.length > 0 ?
+                        <>
+                            <h2>🎧 Added Songs:</h2>
 
-                    <div class="songs">
-                        {addedSongs.map(song => (
-                            <SongCard 
-                                client:only="react" 
-                                loggedInUserId={null} 
-                                userId={null} 
-                                spotifyId={song.id} 
-                                sessionCookie={sessionCookie.value} 
-                                alreadyLiked={loggedInUserLikedSongs.includes(song.id)} 
-                                forceRefresh={true}
-                                likesCount={song.likes}
-                                createdAt={song.createdAt}
-                            />
-                        ))}
-                    </div>
-                </>
-            :
-                <h2>🔇 No added songs</h2>
-            }
-        </div>
+                            <div class="songs">
+                                {addedSongs.map(song => (
+                                    <SongCard 
+                                        client:only="react" 
+                                        loggedInUserId={null} 
+                                        userId={null} 
+                                        spotifyId={song.id} 
+                                        sessionCookie={sessionCookie.value} 
+                                        alreadyLiked={loggedInUserLikedSongs.includes(song.id)} 
+                                        forceRefresh={true}
+                                        likesCount={song.likes}
+                                        createdAt={song.createdAt}
+                                    />
+                                ))}
+                            </div>
+                        </>
+                    :
+                        <h2>🔇 No added songs</h2>
+                    }
+                </div>
+            </>
+        :
+            <>
+                <h1>User was not found</h1>
+
+                <div class="not-found">
+                    <p>How did you get here...?</p>
+                    <a href="/">Home</a>
+                </div>
+            </>
     </main>
 </Layout>
 
@@ -158,7 +176,7 @@ let loggedInUserLikedSongs = (await db.collection("users").doc(user.uid).get()).
             const json = await res.json()
 
             if(res.ok){
-                navigate("/login")
+                window.location = "/login"
                 document.cookie = "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
             } else{
                 console.error(json.error)

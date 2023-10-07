@@ -126,7 +126,7 @@ if(sessionCookie){
 		color: #dadada;
 		box-shadow: 0 0 50px 10px #555;
 	}
-	nav .toggle-visiblity-container{
+	nav .toggle-visibility-container{
 		padding: 0.75rem;
 		display: flex;
 		align-items: center;
@@ -134,28 +134,28 @@ if(sessionCookie){
 		background: rgba(255, 255, 255, 0.75);
 		border-bottom-right-radius: 1rem;
 	}
-	.dark nav .toggle-visiblity-container{
+	.dark nav .toggle-visibility-container{
 		background: rgba(0, 0, 0, 0.5);
 		color: #dadada;
 	}
-	nav.seen .toggle-visiblity-container{
+	nav.seen .toggle-visibility-container{
 		background: none;
 	}
-	nav .toggle-visiblity-container button{
+	nav .toggle-visibility-container button{
 		background: transparent;
 		display: grid;
 		place-items: center;
 	}
-	.dark nav .toggle-visiblity-container button{
+	.dark nav .toggle-visibility-container button{
 		color: #dadada;
 	}
-	nav .toggle-visiblity-container button:focus-within{
+	nav .toggle-visibility-container button:focus-within{
 		outline: none;
 	}
-	nav .toggle-visiblity-container svg{
+	nav .toggle-visibility-container svg{
 		scale: 2;
 	}
-	nav .toggle-visiblity-container a{
+	nav .toggle-visibility-container a{
 		font-size: 1.5rem;
 		letter-spacing: -1.5px;
 	}
@@ -324,6 +324,36 @@ if(sessionCookie){
 		margin: 0 1rem;
 		border-radius: 100%;
 	}
+	.not-found{
+        text-align: center;
+        background: #ddd;
+        padding: 0.5rem 0.5rem;
+        margin: 1rem 0;
+        border-radius: 0.5rem;
+    }
+    .dark .not-found{
+        background: #666;
+    }
+    .not-found p{
+        color: #666;
+        text-align: center;
+        background: none;
+        line-height: normal;
+        padding: 0;
+        font-size: clamp(0.75rem, 4vw, 1rem);
+        font-style: italic;
+    }
+    .dark .not-found p{
+        color: #ddd;
+    }
+    .not-found a{
+        color: inherit;
+        text-decoration: none;
+        font-size: clamp(1rem, 4vw, 1.25rem);
+		background: rgba(0, 0, 0, 0.25);
+		padding: 0.25rem 0.5rem;
+		border-radius: 0.25rem;
+    }
 
 	@keyframes slide-right{
 		0%{translate: -100%}
@@ -338,7 +368,7 @@ if(sessionCookie){
 		nav{
 			margin: 0 auto;
 		}
-		nav .toggle-visiblity-container{
+		nav .toggle-visibility-container{
 			margin: 0 auto;
 		}
 		nav.seen{
@@ -420,10 +450,7 @@ if(sessionCookie){
 		})
 	}
 
-	colourMode()
-	document.addEventListener("astro:after-swap", () =>{
-		colourMode()
-		
+	const setActiveButton = () =>{
 		document.querySelectorAll("nav .links li a").forEach(a =>{
 			const pathname = a.href.replace(window.location.origin, "")
 
@@ -433,5 +460,18 @@ if(sessionCookie){
 				a.parentElement.classList.remove("active")
 			}
 		})
+	}
+
+	colourMode()
+	document.addEventListener("astro:after-swap", () =>{
+		colourMode()
+
+		// in case the nav hasn't been opened yet
+		document.querySelector("nav .toggle-visibility-container button").addEventListener("click", () =>{
+			setActiveButton()
+		})
+		
+		// in case the nav is already open
+		setActiveButton()
 	})
 </script>
