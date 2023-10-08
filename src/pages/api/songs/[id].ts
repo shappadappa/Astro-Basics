@@ -31,15 +31,22 @@ export const DELETE: APIRoute = async({request, params}) =>{
     }
 
     try{
-        await songRef.delete()
+        const userSnapshots = await db.collection("users").where("likes", "array-contains", params.id).get()
 
-        const usersSnapshot = await db.collection("users").where("likes", "array-contains", params.id).get()
-
-        usersSnapshot.forEach(async(userSnapshot) => {
+        for(const userSnapshot of userSnapshots.docs){
             let userLikes = userSnapshot.data().likes
             userLikes.splice(userLikes.indexOf(params.id), 1)
             await db.collection("users").doc(userSnapshot.id).update({likes: userLikes})
-        })
+        }
+
+        const songLikes = (await songRef.get()).data().likes
+        const songUserUid = (await songRef.get()).data().userUid
+
+        const songUserRef = db.collection("users").doc(songUserUid)
+        const chords = (await songUserRef.get()).data().chords
+        await songUserRef.update({chords: chords - songLikes})
+
+        await songRef.delete()
     } catch(error){
         return new Response(JSON.stringify({error: error.errorInfo.message}), {status: 500})
     }

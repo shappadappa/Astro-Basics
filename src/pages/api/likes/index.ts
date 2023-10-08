@@ -16,19 +16,25 @@ export const POST: APIRoute = async({request}) =>{
         return new Response(JSON.stringify({error: error.errorInfo.message}), {status: 401})
     }
 
-    const userRef = db.collection("users").doc(decodedCookie.user_id)
-    let userLikes = (await userRef.get()).data().likes
+    const loggedInUserRef = db.collection("users").doc(decodedCookie.user_id)
+    let loggedInUserLikes = (await loggedInUserRef.get()).data().likes
 
     const songRef = db.collection("songs").doc(body.spotifyId)
     let songLikes = (await songRef.get()).data().likes
 
-    if(userLikes.includes(body.spotifyId)){
-        userLikes.splice(userLikes.indexOf(body.spotifyId), 1)
-        await userRef.update({likes: userLikes})
+    const songUserId = (await songRef.get()).data().userUid
+    const songUserRef = db.collection("users").doc(songUserId)
+    let songUserChords = (await songUserRef.get()).data().chords
+
+    if(loggedInUserLikes.includes(body.spotifyId)){
+        loggedInUserLikes.splice(loggedInUserLikes.indexOf(body.spotifyId), 1)
+        await loggedInUserRef.update({likes: loggedInUserLikes})
         await songRef.update({likes: songLikes - 1})
+        await songUserRef.update({chords: songUserChords - 1})
     } else{
-        await userRef.update({likes: [...userLikes, body.spotifyId]})
+        await loggedInUserRef.update({likes: [...loggedInUserLikes, body.spotifyId]})
         await songRef.update({likes: songLikes + 1})
+        await songUserRef.update({chords: songUserChords + 1})
     }
 
     return new Response(JSON.stringify({msg: "Hello world"}), {status: 200})

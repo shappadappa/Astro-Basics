@@ -29,11 +29,12 @@ const {id} = Astro.params
 
 const userSnapshot = await db.collection("users").doc(id).get()
 
-let username, userLikes, userLikedSongs = [], addedSongs, loggedInUserLikedSongs
+let username, userLikes, chords, userLikedSongs = [], addedSongs, loggedInUserLikedSongs
 
 if(userSnapshot.exists){
     username = userSnapshot.data().username
     userLikes = userSnapshot.data().likes
+    chords = userSnapshot.data().chords
 
     if(userLikes.length > 0){
         userLikedSongs = (await db.collection("songs").where("__name__", "in", userLikes).get()).docs.map(song => ({
@@ -59,6 +60,8 @@ if(userSnapshot.exists){
                     <span>{decodedCookie.uid === id  ? "Your" : `${username}'s`} Profile</span>
                     {decodedCookie.uid === id && <button class="delete-profile">Delete Profile</button>}
                 </h1>
+
+                <h2 class="chords-count">Chords: {chords}</h2>
 
                 <div class="songs-container liked">
                     {userLikedSongs.length > 0 ? 
@@ -147,9 +150,28 @@ if(userSnapshot.exists){
         background: #5a0000;
         border-color: #3f0000;
     }
+    .chords-count{
+        margin: 1rem 0;
+        font-weight: bold;
+        font-size: clamp(1.5rem, 4vw, 1.75rem);
+    }
     .songs-container{
         margin: 2rem 0;
         border: 1px solid #cacaca;
+    }
+    .songs-container.liked{
+        background: rgba(255, 204, 110, 0.1);
+        box-shadow: 0 0 50px 10px rgba(255, 204, 110, 0.35) inset;
+    }
+    body.dark .songs-container.liked{
+        box-shadow: 0 0 50px 10px rgb(255, 204, 110) inset;
+    }
+    .songs-container.added{
+        background: rgba(41, 214, 101, 0.1);
+        box-shadow: 0 0 50px 10px rgba(41, 214, 101, 0.35) inset;
+    }
+    body.dark .songs-container.added{
+        box-shadow: 0 0 50px 10px rgb(41, 214, 101) inset;
     }
     h2{
         border-radius: 1rem;

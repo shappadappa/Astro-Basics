@@ -8,6 +8,8 @@ export const GET: APIRoute = async({params}) =>{
     let username = ""
     if(snapshot.exists){
         username = snapshot.data().username
+    } else{
+        return new Response(JSON.stringify({error: "User does not exist"}), {status: 404})
     }
 
     return new Response(JSON.stringify(username), {status: 200})
@@ -34,11 +36,28 @@ export const DELETE: APIRoute = async({request, params, redirect}) =>{
         return new Response(JSON.stringify({error: "Unauthorised access to delete account"}), {status: 401})
     }
 
+    const userSnapshot = await db.collection("users").doc(decodedCookie.user_id).get()
+
+    if(!userSnapshot.exists){
+        return new Response(JSON.stringify({error: "User not found"}), {status: 404})
+    }
+
     try {
-       await db.collection("users").doc(decodedCookie.user_id).delete()
-       auth.deleteUser(decodedCookie.user_id)
+        for(const likedSongId of userSnapshot.data().likes){
+            const songRef = db.collection("songs").doc(likedSongId)
+            const userUid = (await songRef.get()).data().userUid
+            const likes = (await songRef.get()).data().likes
+            await songRef.update({likes: likes - 1})
+
+            const songUserRef = db.collection("users").doc(userUid)
+            const chords = (await songUserRef.get()).data().chords
+            await songUserRef.update({chords: chords - 1})
+        }
+
+        await db.collection("users").doc(decodedCookie.user_id).delete()
+        auth.deleteUser(decodedCookie.user_id)
        
-       return new Response(JSON.stringify({msg: "Profile deleted"}), {status: 200})
+        return new Response(JSON.stringify({msg: "Profile deleted"}), {status: 200})
     } catch (error: any){
         return new Response(JSON.stringify({error: error.errorInfo.message}), {status: 500})
     }

@@ -34,9 +34,9 @@ export const POST: APIRoute = async ({request, redirect}) => {
     await auth.createUser({
       email,
       password,
-      displayName: username,
+      displayName: username
     }).then(async(user) =>{
-      await db.collection("users").doc(user.uid).set({likes: [], username})
+      await db.collection("users").doc(user.uid).set({likes: [], username, chords: 0})
     })
   } catch (error: any) {
     return new Response(JSON.stringify({error: error.errorInfo.message}), {status: 400})
