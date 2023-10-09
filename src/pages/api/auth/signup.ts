@@ -36,7 +36,7 @@ export const POST: APIRoute = async ({request, redirect}) => {
       password,
       displayName: username
     }).then(async(user) =>{
-      await db.collection("users").doc(user.uid).set({likes: [], username, chords: 0})
+      await db.collection("users").doc(user.uid).set({likes: [], username, chords: 0, addedSongs: 0})
     })
   } catch (error: any) {
     return new Response(JSON.stringify({error: error.errorInfo.message}), {status: 400})

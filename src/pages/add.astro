@@ -11,10 +11,11 @@ if(!sessionCookie){
 	return Astro.redirect("/login")
 }
 
+let user
 try{
     const decodedCookie = await auth.verifySessionCookie(sessionCookie.value)
     
-    const user = await auth.getUser(decodedCookie.uid)
+    user = await auth.getUser(decodedCookie.uid)
 } catch(error){
     Astro.cookies.delete("session")
 	return Astro.redirect("/login")
@@ -23,8 +24,30 @@ try{
 
 <Layout title="Astro Basics">
     <main>
-        <h1>Add a Song</h1>
-
-        <AddSongForm client:only="react" sessionCookie={sessionCookie.value} />
+        {user.addedSongs < 5 ?
+            <>
+                <h1>Add a Song</h1>
+                <AddSongForm client:only="react" sessionCookie={sessionCookie.value} />
+            </>
+        :
+            <>
+                <h1>Cannot add Songs</h1>
+                <p>You have reached your limit of 5 songs added - please remove songs to add new ones.</p>
+                <a href={`/profile/${user.uid}`}>My Profile</a>
+            </>
+        }
     </main>
 </Layout>
+
+<style>
+    a{
+        color: inherit;
+        text-align: center;
+        display: block;
+        font-size: clamp(1.125rem, 4vw, 1.25rem);
+        text-decoration: none;
+    }
+    a:hover{
+        text-decoration: underline;
+    }
+</style>

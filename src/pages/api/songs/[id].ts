@@ -44,7 +44,8 @@ export const DELETE: APIRoute = async({request, params}) =>{
 
         const songUserRef = db.collection("users").doc(songUserUid)
         const chords = (await songUserRef.get()).data().chords
-        await songUserRef.update({chords: chords - songLikes})
+        const addedSongs = (await songUserRef.get()).data().addedSongs
+        await songUserRef.update({chords: chords - songLikes, addedSongs: addedSongs - 1})
 
         await songRef.delete()
     } catch(error){
