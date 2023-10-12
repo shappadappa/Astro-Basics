@@ -1,7 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import AddSongForm from "../components/AddSongForm.jsx"
-import { app } from '../firebase/server';
+import { db, app } from '../firebase/server';
 import { getAuth } from "firebase-admin/auth"
 
 const auth = getAuth(app)
@@ -20,13 +20,17 @@ try{
     Astro.cookies.delete("session")
 	return Astro.redirect("/login")
 }
+
+const addedSongs = (await db.collection("users").doc(user.uid).get()).data().addedSongs
 ---
 
 <Layout title="Astro Basics">
     <main>
-        {user.addedSongs < 5 ?
+        {addedSongs < 5 ?
             <>
                 <h1>Add a Song</h1>
+
+                <p>! Note that a song can only after 5 days from when it was created</p>
                 <AddSongForm client:only="react" sessionCookie={sessionCookie.value} />
             </>
         :

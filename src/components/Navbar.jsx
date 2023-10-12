@@ -1,8 +1,9 @@
 import { useState } from "react";
 
-const Navbar = ({userId, originalLocation}) => {
+const Navbar = ({userId}) => {
     const [seen, setSeen] = useState(false)
     const [animationPlayed, setAnimationPlayed] = useState(false)
+    const [location, setLocation] = useState("")
 
     const handleLogout = async() =>{
         const res = await fetch("/api/auth/logout")
@@ -20,6 +21,7 @@ const Navbar = ({userId, originalLocation}) => {
         <nav className={`${seen ? "seen" : ""}${!animationPlayed ? " not-played" : ""}`}>
             <div className="toggle-visibility-container">
                 <button onClick={() =>{
+                    setLocation(window.location.pathname)
                     if(animationPlayed){
                         setAnimationPlayed(false)
                     } else{
@@ -41,7 +43,7 @@ const Navbar = ({userId, originalLocation}) => {
                 <ul className="links">
                     {userId ? 
                         <>
-                            <li className={originalLocation === "/" ? " active" : ""}>
+                            <li className={location === "/" ? " active" : ""}>
                                 <a href="/">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                         <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z"/>
@@ -50,7 +52,7 @@ const Navbar = ({userId, originalLocation}) => {
                                     Home
                                 </a>
                             </li>
-                            <li className={originalLocation === "/add" ? " active" : ""}>
+                            <li className={location === "/add" ? " active" : ""}>
                                 <a href="/add">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                         <path d="M6 13c0 1.105-1.12 2-2.5 2S1 14.105 1 13c0-1.104 1.12-2 2.5-2s2.5.896 2.5 2zm9-2c0 1.105-1.12 2-2.5 2s-2.5-.895-2.5-2 1.12-2 2.5-2 2.5.895 2.5 2z"/>
@@ -61,7 +63,7 @@ const Navbar = ({userId, originalLocation}) => {
                                 </a>
                             </li>
                             <br />
-                            <li className={`account-modifier${originalLocation === ("/profile/" + userId) ? " active" : ""}`}>
+                            <li className={`account-modifier${location === ("/profile/" + userId) ? " active" : ""}`}>
                                 <a href={`/profile/${userId}`}>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                         <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
@@ -81,7 +83,7 @@ const Navbar = ({userId, originalLocation}) => {
                         </>
                     :
                     <>
-                        <li className={`account-modifier${originalLocation === "/login" ? " active" : ""}`}>
+                        <li className={`account-modifier${location === "/login" ? " active" : ""}`}>
                             <a href="/login">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                     <path fillRule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0v-2z"/>
@@ -90,7 +92,7 @@ const Navbar = ({userId, originalLocation}) => {
                                 Login
                             </a>
                         </li>
-                        <li className={`account-modifier${originalLocation === "/signup" ? " active" : ""}`}>
+                        <li className={`account-modifier${location === "/signup" ? " active" : ""}`}>
                             <a href="/signup">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                     <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0Zm-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>

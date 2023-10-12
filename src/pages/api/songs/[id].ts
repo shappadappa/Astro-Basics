@@ -30,6 +30,11 @@ export const DELETE: APIRoute = async({request, params}) =>{
         return new Response(JSON.stringify({error: "Unauthorised access to delete song"}), {status: 401})
     }
 
+    // calculating the time between the createdAt and now
+    if((new Date().getTime() / 1000 - songSnapshot.data().createdAt.seconds) / 3600 / 24 < 5){
+        return new Response(JSON.stringify({error: "Cannot remove songs before 5 days after addition"}), {status: 400})
+    }
+
     try{
         const userSnapshots = await db.collection("users").where("likes", "array-contains", params.id).get()
 

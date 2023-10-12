@@ -38,7 +38,7 @@ if(sessionCookie){
 		<ViewTransitions />
 	</head>
 	<body transition:animate="fade">
-		<Navbar client:only="react" userId={decodedCookie && decodedCookie.uid ? decodedCookie.uid : null} transition:persist originalLocation={Astro.url.pathname} />
+		<Navbar client:only="react" userId={decodedCookie && decodedCookie.uid ? decodedCookie.uid : null} transition:persist />
 		<button class="toggle-dark-mode" transition:persist></button>
 		<slot />
 	</body>
@@ -62,7 +62,7 @@ if(sessionCookie){
 		font-family: Inter, Arial, Helvetica, sans-serif;
 		background-image: url("/svg/dark-music-note.svg");
 		background-size: 10% 50px;
-		background-position: 0;
+		background-position: 0 0;
 		background-repeat: repeat;
 	}
 	body.dark{
@@ -405,7 +405,7 @@ if(sessionCookie){
 		const toggleBtn = document.querySelector(".toggle-dark-mode")
 
 		const toggleDark = (dark: boolean) =>{
-			document.cookie = dark ? "dark=true" : "dark=false"
+			document.cookie = dark ? "dark=true; path=/" : "dark=false; path=/"
 			
 			toggleBtn.innerHTML = dark ? 
 			// sun
@@ -429,11 +429,11 @@ if(sessionCookie){
 		// if the user accesses the website for the first time, use the system preference. otherwise, use the value stored in the cookie
 		if(darkModeCookie.length === 0){
 			if(window.matchMedia("(prefers-color-scheme: dark)").matches){
-				document.cookie = "dark=true"
+				document.cookie = "dark=true; path=/"
 				body.classList.add("dark")
 				toggleDark(true)
 			} else{
-				document.cookie = "dark=false"
+				document.cookie = "dark=false; path=/"
 			}
 		} else{
 			if(darkModeCookie === "true"){
@@ -465,13 +465,6 @@ if(sessionCookie){
 	colourMode()
 	document.addEventListener("astro:after-swap", () =>{
 		colourMode()
-
-		// in case the nav hasn't been opened yet
-		document.querySelector("nav .toggle-visibility-container button").addEventListener("click", () =>{
-			setActiveButton()
-		})
-		
-		// in case the nav is already open
 		setActiveButton()
 	})
 </script>
