@@ -38,17 +38,36 @@
         0 0 20px 2px #ffcc6e,
         0 0 0 1000vh rgba(0, 0, 0, 0.4);
 }
+.background-img{
+    width: 100%;
+    height: 100%;
+    background-size: 100%;
+    opacity: 0.15;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: inherit;
+    transition: opacity 0.5s ease-out;
+}
+.song.liked .background-img{
+    opacity: 0.3;
+}
 /* h3 transition adapted from https://stackoverflow.com/questions/17212094/fill-background-color-left-to-right-css */
 h3{
     font-weight: bold;
     text-decoration: underline;
     font-size: 1.5rem;
-    background: linear-gradient(to left, rgba(0, 0, 0, 0.06) 50%, rgba(0, 0, 0, 0.6) 50%) right;
+    background: linear-gradient(to left, rgba(0, 0, 0, 0.06) 50%, rgba(0, 0, 0, 0.75) 50%) right;
     background-size: 201%;
     padding: 0.25rem 0.5rem;
     border-radius: 0.5rem;
     transition: 0.35s ease-out;
     position: relative;
+}
+.song.liked h3{
+    background-position: left;
+    transition: 0.7s ease-out;
+    color: #ffcc6e;
 }
 h3 button{
     position: absolute;
@@ -58,18 +77,34 @@ h3 button{
     border-top-right-radius: 0.5rem;
     font-size: 0.5rem;
     padding: 0.125rem;
-}
-.song.liked h3{
-    background-position: left;
-    transition: 0.7s ease-out;
-    color: #ffcc6e;
+    transition: 0.35s ease-out;
+    z-index: 1;
 }
 .song.liked h3 button{
+    transition: 0.35s 0.35s ease-out;
     background: rgba(255, 255, 255, 0.1);
     color: #ffcc6e;
 }
+h3 .explicit{
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    background: #bbb;
+    color: rgba(0, 0, 0, 0.75);
+    padding: 0.25rem;
+    font-size: 0.75rem;
+    border-radius: 0.25rem;
+    transition: 0.35s ease-out;
+}
+.song.liked h3 .explicit{
+    transition: 0.35s 0.35s ease-out;
+    background: #444;
+    color: #bbb;
+}
 h4{
     margin: 0.5rem 0;
+    z-index: 1;
+    position: relative;
 }
 h6{
     font-size: 0.75rem;

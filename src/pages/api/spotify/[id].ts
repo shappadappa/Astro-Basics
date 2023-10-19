@@ -22,15 +22,15 @@ export const GET: APIRoute = async({params}) =>{
     })
 
     const trackJson = await trackRes.json()
-    
     return new Response(JSON.stringify(
         {track: 
             {
-                album: {name: trackJson.album.name, href: trackJson.album.external_urls.spotify}, 
+                album: {name: trackJson.album.name, imageUrl: trackJson.album.images [0].url, href: trackJson.album.external_urls.spotify}, 
                 name: trackJson.name, 
                 artists: trackJson.artists.map(artist => {
                     return {name: artist.name, href: artist.external_urls.spotify, id: artist.id}
                 }),
+                explicit: trackJson.explicit,
                 href: trackJson.external_urls.spotify
             }
         }

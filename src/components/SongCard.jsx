@@ -35,7 +35,7 @@ const SongCard = ({loggedInUserId, userId, spotifyId, sessionCookie, alreadyLike
                     setUsername(userJson)
                 }
             }
-            
+
             setIsLoading(false)
         }
       
@@ -103,6 +103,7 @@ const SongCard = ({loggedInUserId, userId, spotifyId, sessionCookie, alreadyLike
                     </>
                 :
                     <>
+                        <div className="background-img" style={{"backgroundImage": `url(${songDetails.album.imageUrl})`}}></div>
                         <h3>
                             <a target="_blank" href={songDetails.href}>{songDetails.name}</a>
                             <button onClick={() => setExpanded(!expanded)}>
@@ -116,6 +117,8 @@ const SongCard = ({loggedInUserId, userId, spotifyId, sessionCookie, alreadyLike
                                     </svg>
                                 }
                             </button>
+                            
+                            {songDetails.explicit && <span className="explicit">E</span>}
                         </h3>
                         <h4>By {songDetails.artists.map((artist, index) => (
                             <a key={artist.id} target="_blank" href={artist.href}>{`${artist.name}${index === songDetails.artists.length - 1 ? "" : ", "}`}</a>
