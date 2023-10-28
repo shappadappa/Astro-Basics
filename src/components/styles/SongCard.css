@@ -8,58 +8,88 @@
     outline: 2px solid #fbe4ba;
     border-radius: 0.5rem;
     padding: 0.75rem 0.5rem;
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     position: relative;
     color: #333;
     transition: 
-        scale 0.5s ease-in-out,
         box-shadow 1s linear,
-        outline 0.125s ease-out,
-        padding-bottom 0.5s ease-in-out;
+        outline 0.125s ease-out;
+    max-height: 90%;
 }
 .song.liked{
     transition: 
-        scale 0.5s ease-in-out,
-        box-shadow 1s linear,
-        outline 0.25s ease-out;
+    box-shadow 1s linear,
+    outline 0.25s ease-out;
     outline: 4px solid #ffcc6e;
     background: linear-gradient(135deg, #ffcc6e, #eaeaea 60%)
 }
 .song.expanded{
-    scale: 1.35;
+    transition: 
+    scale 0.5s ease-in-out,
+    box-shadow 1s linear,
+    outline 0.125s ease-out;
     z-index: 2;
     box-shadow: 
-        0 0 20px 2px #fbe4ba,
-        0 0 0 1000vh rgba(0, 0, 0, 0.4);
+    0 0 20px 2px #fbe4ba,
+    0 0 0 1000vh rgba(0, 0, 0, 0.4);
     padding-bottom: 2rem;
+    animation: fade-in 0.125s ease-out;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 50%;
+    scale: 1.35;
 }
 .song.liked.expanded{
+    transition: 
+    scale 0.5s ease-in-out,
+    box-shadow 1s linear,
+    outline 0.25s ease-out;
     box-shadow: 
-        0 0 20px 2px #ffcc6e,
-        0 0 0 1000vh rgba(0, 0, 0, 0.4);
+    0 0 20px 2px #ffcc6e,
+    0 0 0 1000vh rgba(0, 0, 0, 0.4);
 }
-.background-img{
+.container{
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    background-size: 100%;
-    opacity: 0.15;
+    z-index: 2;
+}
+.background-img{
+    filter: blur(2px);
+    width: 100%;
+    height: 100%;
+    opacity: 0.4;
     position: absolute;
     top: 0;
     left: 0;
     border-radius: inherit;
-    transition: opacity 0.5s ease-out;
+    transition: 0.5s ease-out;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+.song.shell .background-img{
+    background: rgba(0, 0, 0, 0.35);
+    opacity: 1;
 }
 .song.liked .background-img{
-    opacity: 0.3;
+    filter: blur(0);
+}
+.song *:not(.background-img){
+    z-index: 1;
 }
 /* h3 transition adapted from https://stackoverflow.com/questions/17212094/fill-background-color-left-to-right-css */
 h3{
     font-weight: bold;
     text-decoration: underline;
     font-size: 1.5rem;
-    background: linear-gradient(to left, rgba(0, 0, 0, 0.06) 50%, rgba(0, 0, 0, 0.75) 50%) right;
+    background: linear-gradient(to left, rgba(0, 0, 0, 0.15) 50%, rgba(0, 0, 0, 0.75) 50%) right;
     background-size: 201%;
-    padding: 0.25rem 0.5rem;
+    padding: 0.5rem;
     border-radius: 0.5rem;
     transition: 0.35s ease-out;
     position: relative;
@@ -78,7 +108,6 @@ h3 button{
     font-size: 0.5rem;
     padding: 0.125rem;
     transition: 0.35s ease-out;
-    z-index: 1;
 }
 .song.liked h3 button{
     transition: 0.35s 0.35s ease-out;
@@ -103,7 +132,9 @@ h3 .explicit{
 }
 h4{
     margin: 0.5rem 0;
-    z-index: 1;
+    position: relative;
+}
+h5{
     position: relative;
 }
 h6{
@@ -115,11 +146,13 @@ h6{
     border-radius: 0.5rem;
     color: rgba(0, 0, 0, 0.6);
     border: 1px solid rgba(0, 0, 0, 0.6);
+    position: relative;
 }
 iframe{
     display: block;
     padding: 0.5rem;
-    height: 50%;
+    height: 152px;
+    position: relative;
 }
 a{
     color: inherit;
@@ -139,6 +172,9 @@ a:hover{
     padding: 0.5rem;
     background: transparent;
     transition: 0.5s ease-out;
+}
+.like:disabled{
+    cursor: inherit;
 }
 .song.liked .like{
     animation: fill-heart 0.75s ease-out;
@@ -176,6 +212,10 @@ a:hover{
     0%{background: rgba(0, 0, 0, 0.05)}
     50%{background: rgba(0, 0, 0, 0.08)}
     100%{background: rgba(0, 0, 0, 0.05)}
+}
+@keyframes fade-in{
+    0%{opacity: 0}
+    100%{opacity: 1}
 }
 @keyframes grow-linear{
     0%{opacity: 0; font-size: 0}

@@ -6,6 +6,7 @@ const SongCard = ({loggedInUserId, userId, spotifyId, sessionCookie, alreadyLike
     const [isLoading, setIsLoading] = useState(true)
     const [songDetails, setSongDetails] = useState()
     const [likes, setLikes] = useState(likesCount)
+    const [isLiking, setIsLiking] = useState(false)
     const [expanded, setExpanded] = useState(false)
     const [username, setUsername] = useState("")
     const [liked, setLiked] = useState(alreadyLiked)
@@ -43,6 +44,7 @@ const SongCard = ({loggedInUserId, userId, spotifyId, sessionCookie, alreadyLike
     }, [])
 
     const likeSong = async() =>{
+        setIsLiking(true)
         const previousLikeState = liked, previousLikeCount = likes
 
         setLikes(!liked ? likes + 1 : likes - 1)
@@ -69,6 +71,8 @@ const SongCard = ({loggedInUserId, userId, spotifyId, sessionCookie, alreadyLike
         if(forceRefresh){
             window.location.reload(false)
         }
+
+        setIsLiking(false)
     }
 
     const removeSong = async() =>{
@@ -93,6 +97,46 @@ const SongCard = ({loggedInUserId, userId, spotifyId, sessionCookie, alreadyLike
     return (
         <>
             {error && <div className="error"><span>!</span>{error}</div>}
+
+            {expanded && 
+                <>
+                    <div className="container">{/* used to prevent buttons being clicked from other elements */}</div>
+                    <div className={`song shell${liked ? " liked" : ""}`}>
+                        <div className="background-img"></div>
+                        <h3>
+                            <a target="_blank" href={songDetails.href}>{songDetails.name}</a>
+                            {songDetails.explicit && <span className="explicit">E</span>}
+                        </h3>
+                        <h4>By {songDetails.artists.map((artist, index) => (
+                            <a key={artist.id} target="_blank" href={artist.href}>{`${artist.name}${index === songDetails.artists.length - 1 ? "" : ", "}`}</a>
+                        ))}</h4>
+                        <h4>From <a target="_blank" href={songDetails.album.href}>{songDetails.album.name}</a></h4>
+
+                        {loggedInUserId &&
+                            <h5>Added by 
+                                {username.length > 0 ?
+                                    <> <a href={`/profile/${userId}`} className={loggedInUserId === userId ? "you" : ""}>{loggedInUserId === userId ? "you" : username}</a></>
+                                :
+                                    <span> (deleted)</span>
+                                }
+                            </h5>
+                        }
+
+                        <button className="like" title="Like" disabled={isLiking}>
+                            {liked ? 
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path fillRule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                                </svg>
+                            :
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
+                                </svg>
+                            }
+                        </button>
+                    </div>
+                </>
+            }
+
             <div className={`song${liked ? " liked" : ""}${expanded ? " expanded" : ""}`}>
                 {isLoading ? 
                     <>
@@ -102,7 +146,7 @@ const SongCard = ({loggedInUserId, userId, spotifyId, sessionCookie, alreadyLike
                         <h5 className="skeleton">‎</h5>
                     </>
                 :
-                    <>
+                    <> 
                         <div className="background-img" style={{"backgroundImage": `url(${songDetails.album.imageUrl})`}}></div>
                         <h3>
                             <a target="_blank" href={songDetails.href}>{songDetails.name}</a>
@@ -144,7 +188,7 @@ const SongCard = ({loggedInUserId, userId, spotifyId, sessionCookie, alreadyLike
                             </>
                         }
 
-                        <button className="like" onClick={likeSong} title="Like">
+                        <button className="like" onClick={likeSong} title="Like" disabled={isLiking}>
                             {liked ? 
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                     <path fillRule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
