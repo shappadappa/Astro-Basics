@@ -24,7 +24,7 @@ try{
 const addedSongs = (await db.collection("users").doc(user.uid).get()).data().addedSongs
 ---
 
-<Layout title="Astro Basics">
+<Layout title="Musical Stockpile - Add a Song">
     <main>
         {addedSongs < 5 ?
             <>
@@ -41,17 +41,13 @@ const addedSongs = (await db.collection("users").doc(user.uid).get()).data().add
             </>
         }
     </main>
+
 </Layout>
 
 <style>
     a{
-        color: inherit;
         text-align: center;
         display: block;
         font-size: clamp(1.125rem, 4vw, 1.25rem);
-        text-decoration: none;
-    }
-    a:hover{
-        text-decoration: underline;
     }
 </style>

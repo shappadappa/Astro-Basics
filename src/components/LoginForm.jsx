@@ -123,7 +123,7 @@ const LoginForm = ({signup}) => {
             </label>
             <input type={passwordVisible ? "text" : "password"} id="password" name="password"/>
 
-            <input type="submit" value={signup ? "Sign Up" : "Login"} />
+            <input type="submit" value={signup ? "Sign Up" : "Login"} disabled={isLoading} />
 
             {isLoading && 
                 <Loader />

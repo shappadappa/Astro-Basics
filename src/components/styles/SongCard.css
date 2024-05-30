@@ -39,6 +39,7 @@
     right: 0;
     margin: 0 auto;
     width: 50%;
+    min-height: 25rem;
     scale: 1.35;
 }
 .song.liked.expanded{
@@ -153,11 +154,6 @@ iframe{
     padding: 0.5rem;
     height: 152px;
     position: relative;
-}
-a{
-    color: inherit;
-    text-decoration: inherit;
-    font-weight: bold;
 }
 a.you{
     color: #d68b00;

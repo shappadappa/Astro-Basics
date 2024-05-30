@@ -41,6 +41,17 @@ if(sessionCookie){
 		<Navbar client:only="react" userId={decodedCookie && decodedCookie.uid ? decodedCookie.uid : null} transition:persist />
 		<button class="toggle-dark-mode" transition:persist></button>
 		<slot />
+		<footer>Made by 
+			<a class="github-link" href="https://github.com/shappadappa" target="_blank">
+				<span>shappadappa</span>
+				<div class="logo">
+					<div></div>
+					<div></div>
+					<div></div>
+				</div>
+			</a>
+			&copy; 2023
+		</footer>
 	</body>
 </html>
 
@@ -68,6 +79,48 @@ if(sessionCookie){
 	body.dark{
 		background-image: url("/svg/light-music-note.svg");
 		background-color: #222;
+	}
+	footer{
+		margin-top: 2rem;
+		text-align: center;
+		padding: 2rem 0;
+		background: linear-gradient(rgba(255, 255, 255, 0.5), #fff);
+	}
+	footer .github-link{
+		position: relative;
+		font-weight: bold;
+	}
+	footer .github-link span{
+		position: relative;
+		z-index: 2;
+	}
+	footer .github-link .logo{
+		display: flex;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		justify-content: space-around;
+		align-items: center;
+	}
+	footer .github-link .logo div{
+		width: 2rem;
+		height: 2rem;
+		border-radius: 100%;
+	}
+	footer .github-link .logo :nth-child(1){
+		background: rgba(154, 102, 219, 0.5);
+	}
+	footer .github-link .logo :nth-child(2){
+		background: rgba(233, 171, 193, 0.5);
+	}
+	footer .github-link .logo :nth-child(3){
+		background: rgba(228, 232, 38, 0.5);
+	}
+	.dark footer{
+		color: #ddd;
+		background: linear-gradient(rgba(34, 34, 34, 0.5), #222);
 	}
 	.text-gradient {
 		background-image: linear-gradient(90deg, #333, green);
@@ -101,6 +154,14 @@ if(sessionCookie){
 	button{
 		cursor: pointer;
 	}
+	a{
+		text-decoration: none;
+		color: inherit;
+		font-weight: bold;
+	}
+	a:hover{
+		text-decoration: underline;
+	}
 	nav{
 		position: fixed;
 		top: 0;
@@ -108,8 +169,6 @@ if(sessionCookie){
 		z-index: 999;
 	}
 	nav a{
-		text-decoration: none;
-		color: inherit;
 		font-weight: normal;
 	}
 	nav a:hover{
@@ -348,8 +407,6 @@ if(sessionCookie){
         color: #ddd;
     }
     .not-found a{
-        color: inherit;
-        text-decoration: none;
         font-size: clamp(1rem, 4vw, 1.25rem);
 		background: rgba(0, 0, 0, 0.25);
 		padding: 0.25rem 0.5rem;
